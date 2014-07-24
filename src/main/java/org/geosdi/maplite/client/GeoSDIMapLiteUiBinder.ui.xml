@@ -1,16 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE ui:UiBinder SYSTEM "http://dl.google.com/gwt/DTD/xhtml.ent">
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
-             xmlns:g='urn:import:com.google.gwt.user.client.ui'
-             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
-     
-    <g:DockLayoutPanel unit='EM'>
-        <g:center>
-            <g:VerticalPanel ui:field="myMainPanel"/>
-        </g:center>
-        <g:east size='20'>
-            <g:FlowPanel>
-                <g:VerticalPanel ui:field="legend"/>
-            </g:FlowPanel>
-        </g:east> 
-    </g:DockLayoutPanel>
-            
+             xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+	
+    <g:LayoutPanel>
+        <g:layer>
+            <g:VerticalPanel ui:field="mapPanel"/>
+        </g:layer>
+        <g:layer>
+            <g:VerticalPanel ui:field="legendPanel" />
+        </g:layer>
+    </g:LayoutPanel>
+
 </ui:UiBinder>
+
+            <!--<g:AbsolutePanel ui:field="mapPanel"/>-->
+            <!--<g:DockLayoutPanel unit='EM'> -->
+            <!--<g:center> -->
+            <!--<g:VerticalPanel ui:field="myMainPanel"/> -->
+            <!--</g:center> -->
+            <!--<g:west size="20"> -->
+            <!--<g:FlowPanel> -->
+            <!--</g:FlowPanel> -->
+            <!--</g:west> -->
+            <!--</g:DockLayoutPanel> -->
+            <!--</g:AbsolutePanel>-->

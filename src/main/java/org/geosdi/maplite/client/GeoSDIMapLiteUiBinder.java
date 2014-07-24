@@ -1,17 +1,5 @@
 package org.geosdi.maplite.client;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
 import org.gwtopenmaps.openlayers.client.LonLat;
 import org.gwtopenmaps.openlayers.client.Map;
 import org.gwtopenmaps.openlayers.client.MapOptions;
@@ -27,40 +15,56 @@ import org.gwtopenmaps.openlayers.client.layer.WMS;
 import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
 import org.gwtopenmaps.openlayers.client.layer.WMSParams;
 
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.ui.CheckBox;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+
 public class GeoSDIMapLiteUiBinder extends Composite {
 
-    private Projection DEFAULT_PROJECTION = new Projection(
-            "EPSG:4326");
+    private Projection DEFAULT_PROJECTION = new Projection("EPSG:4326");
 
     protected static final String GET_LEGEND_REQUEST = "?REQUEST=GetLegendGraphic"
             + "&VERSION=1.0.0&FORMAT=image/png&LAYER=";
-    
+
     protected static final String wmsUrl = "http://geoserver.arij.org/geoserver/wms";
 
     private Map map;
 
-    interface ExampleUiBinderUiBinder extends UiBinder<Widget, GeoSDIMapLiteUiBinder> {
+    interface ExampleUiBinderUiBinder extends
+            UiBinder<Widget, GeoSDIMapLiteUiBinder> {
     }
 
-    private static ExampleUiBinderUiBinder ourUiBinder = GWT.create(ExampleUiBinderUiBinder.class);
+    private static ExampleUiBinderUiBinder ourUiBinder = GWT
+            .create(ExampleUiBinderUiBinder.class);
 
     @UiField
-    VerticalPanel myMainPanel;
+    VerticalPanel mapPanel;
 
     @UiField
-    VerticalPanel legend;
+    VerticalPanel legendPanel;
 
     Image image;
-    
+
     WMS wmsLayer;
 
     public GeoSDIMapLiteUiBinder() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        legend.getElement().setId("legend");
-        legend.add(new Image("http://b.dryicons.com/images/icon_sets/coquette_part_4_icons_set/png/64x64/palette.png"));
-        legend.add(new HTML("<span><h4>Legend</h4></span>"));
-        
-        myMainPanel.add(initMap());
+        legendPanel.getElement().setId("legendPanel");
+        legendPanel
+                .add(new Image(
+                                "http://b.dryicons.com/images/icon_sets/coquette_part_4_icons_set/png/64x64/palette.png"));
+        legendPanel.add(new HTML("<span><h4>Legenda</h4></span>"));
+
+        mapPanel.add(initMap());
 
     }
 
@@ -79,18 +83,20 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         defaultMapOptions.setNumZoomLevels(19);
         defaultMapOptions.setDisplayProjection(new Projection("EPSG:4326"));
 
-        //Create a MapWidget and add a OSM layer using an url
+        // Create a MapWidget and add a OSM layer using an url
         MapWidget mapWidget = new MapWidget("100%", "100%", defaultMapOptions);
         OSMOptions options = new OSMOptions();
         options.setNumZoomLevels(19);
         options.setProjection("EPSG:3857");
-        options.crossOriginFix(); //fixes pink tiles in FF
+        options.crossOriginFix(); // fixes pink tiles in FF
         options.setAttribution("geoSDI & WFP Lite Map");
-        OSM osm = new OSM("Tiled Maps", "http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png", options);
+        OSM osm = new OSM("Tiled Maps",
+                "http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+                options);
         osm.setIsBaseLayer(true);
         map = mapWidget.getMap();
         map.addLayer(osm);
-        myMainPanel.getElement().setId("map");
+        mapPanel.getElement().setId("map");
 
         if (layers != null) {
             String[] layerArray = layers.split(";");
@@ -113,7 +119,8 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 map.addLayer(wmsLayer);
 
                 StringBuilder imageURL = new StringBuilder();
-                imageURL.append(wmsUrl).append(GET_LEGEND_REQUEST).append(layerName)
+                imageURL.append(wmsUrl).append(GET_LEGEND_REQUEST)
+                        .append(layerName)
                         .append("&scale=" + map.getScale() + "&service=WMS");
 
                 image = new Image(imageURL.toString());
@@ -126,31 +133,33 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                     @Override
                     public void onClick(ClickEvent event) {
                         CheckBox checkBox = (CheckBox) event.getSource();
-                        manageLayerVisibility(checkBox.getValue(), checkBox.getText());
+                        manageLayerVisibility(checkBox.getValue(),
+                                checkBox.getText());
                     }
                 });
 
-                legend.add(check);
-                legend.add(image);
+                legendPanel.add(check);
+                legendPanel.add(image);
 
             }
 
         }
 
-        //Lets add some default controls to the map
-        map.addControl(new ScaleLine()); //Display the scaleline
+        // Lets add some default controls to the map
+        map.addControl(new ScaleLine()); // Display the scaleline
         map.addControl(new MousePosition());
-        //Center and zoom to a location
+        // Center and zoom to a location
         LonLat lonLat = new LonLat(lon, lat);
         lonLat.transform(DEFAULT_PROJECTION.getProjectionCode(),
-                map.getProjection()); //transform lonlat to OSM coordinate system
+                map.getProjection()); // transform lonlat to OSM coordinate
+        // system
         map.setCenter(lonLat, zommLevel);
 
         return mapWidget;
     }
 
     private void manageLayerVisibility(Boolean value, String layerName) {
-        if(value){
+        if (value) {
             map.getLayerByName(layerName).setIsVisible(true);
         } else {
             map.getLayerByName(layerName).setIsVisible(false);
