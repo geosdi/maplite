@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<module rename-to='maplite'>
+    
+    <inherits name='com.google.gwt.user.User'/>
+    <inherits name='com.google.gwt.user.theme.standard.Standard'/>
+    <inherits name="com.github.gwtbootstrap.Bootstrap"/>
+    <inherits name='org.gwtopenmaps.openlayers.OpenLayers'/>
+    <entry-point class='org.geosdi.maplite.client.GeoSDIMapLite'/>
+    <source path='client'/>
+    <source path='shared'/>
+
+    <public path="resources">
+        <exclude name="** /*.java"/>
+        <exclude name="** /*.class"/>
+    </public>
+    <add-linker name="xsiframe" />
+</module>

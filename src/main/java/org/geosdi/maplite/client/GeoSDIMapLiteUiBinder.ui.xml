@@ -1,0 +1,16 @@
+<ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
+             xmlns:g='urn:import:com.google.gwt.user.client.ui'
+             xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
+     
+    <g:DockLayoutPanel unit='EM'>
+        <g:center>
+            <g:VerticalPanel ui:field="myMainPanel"/>
+        </g:center>
+        <g:east size='20'>
+            <g:FlowPanel>
+                <g:VerticalPanel ui:field="legend"/>
+            </g:FlowPanel>
+        </g:east> 
+    </g:DockLayoutPanel>
+            
+</ui:UiBinder>
