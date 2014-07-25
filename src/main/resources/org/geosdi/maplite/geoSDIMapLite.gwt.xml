@@ -5,6 +5,8 @@
     <inherits name='com.google.gwt.junit.JUnit'/>
     <inherits name='com.google.gwt.user.theme.standard.Standard'/>
     <inherits name="com.github.gwtbootstrap.Bootstrap"/>
+    <!-- ADDING GOOGLE-GUAVA MODULE -->
+    <inherits name="com.google.common.collect.Collect"/>
     <inherits name='org.gwtopenmaps.openlayers.OpenLayers'/>
     <entry-point class='org.geosdi.maplite.client.GeoSDIMapLite'/>
     <source path='client'/>

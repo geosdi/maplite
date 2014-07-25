@@ -130,6 +130,18 @@
         </dependency>
         
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava-version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava-gwt</artifactId>
+            <version>${guava-version}</version>
+        </dependency>
+        
+        <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <version>4.11</version>
@@ -273,6 +285,7 @@
         <!-- Convenience property to set the GWT version -->
         <gwtVersion>2.6.1</gwtVersion>
         <!-- GWT needs at least java 1.5 -->
+        <guava-version>17.0</guava-version>
         <gwt-ol-version>1.1-SNAPSHOT</gwt-ol-version>
         <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

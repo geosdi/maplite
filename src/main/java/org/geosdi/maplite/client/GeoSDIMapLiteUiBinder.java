@@ -1,5 +1,6 @@
 package org.geosdi.maplite.client;
 
+import com.google.common.base.Strings;
 import org.gwtopenmaps.openlayers.client.LonLat;
 import org.gwtopenmaps.openlayers.client.Map;
 import org.gwtopenmaps.openlayers.client.MapOptions;
@@ -58,7 +59,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         legendPanel.getElement().setId("legendPanel");
         legendPanel.add(new Image(
-                                "http://b.dryicons.com/images/icon_sets/coquette_part_4_icons_set/png/64x64/palette.png"));
+                "http://b.dryicons.com/images/icon_sets/coquette_part_4_icons_set/png/64x64/palette.png"));
         legendPanel.add(new HTML("<span><h4>Legenda</h4></span>"));
 
         mapPanel.add(initMap());
@@ -71,10 +72,6 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         String x = Window.Location.getParameter("x");
         String y = Window.Location.getParameter("y");
         String zoom = Window.Location.getParameter("zoom");
-
-        double lon = Double.parseDouble(x);
-        double lat = Double.parseDouble(y);
-        int zommLevel = Integer.parseInt(zoom);
 
         MapOptions defaultMapOptions = new MapOptions();
         defaultMapOptions.setNumZoomLevels(19);
@@ -145,11 +142,22 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         // Lets add some default controls to the map
         map.addControl(new ScaleLine()); // Display the scaleline
         map.addControl(new MousePosition());
-        // Center and zoom to a location
+
+        double lon = 16.17582;
+        double lat = 42.76989;
+        int zommLevel = 5;
+        if (!Strings.isNullOrEmpty(x) && !Strings.isNullOrEmpty(y)
+                && !Strings.isNullOrEmpty(zoom)) {
+
+            lon = Double.parseDouble(x);
+            lat = Double.parseDouble(y);
+            zommLevel = Integer.parseInt(zoom);
+            // Center and zoom to a location
+            // system
+        }
         LonLat lonLat = new LonLat(lon, lat);
         lonLat.transform(DEFAULT_PROJECTION.getProjectionCode(),
                 map.getProjection()); // transform lonlat to OSM coordinate
-        // system
         map.setCenter(lonLat, zommLevel);
 
         return mapWidget;
