@@ -2,6 +2,7 @@
 <module rename-to='maplite'>
     
     <inherits name='com.google.gwt.user.User'/>
+    <inherits name='com.google.gwt.junit.JUnit'/>
     <inherits name='com.google.gwt.user.theme.standard.Standard'/>
     <inherits name="com.github.gwtbootstrap.Bootstrap"/>
     <inherits name='org.gwtopenmaps.openlayers.OpenLayers'/>
@@ -9,9 +10,16 @@
     <source path='client'/>
     <source path='shared'/>
 
+    
+    <!--pay attention in this part-->
+    <source path='resources'/>
+    <replace-with class="org.geosdi.maplite.resources.MapLiteConfiguratorBootstrap">
+        <when-type-is class="com.github.gwtbootstrap.client.ui.config.Configurator"/>
+    </replace-with>
     <public path="resources">
         <exclude name="** /*.java"/>
         <exclude name="** /*.class"/>
     </public>
+    
     <add-linker name="xsiframe" />
 </module>

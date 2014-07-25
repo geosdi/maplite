@@ -3,25 +3,36 @@
 <ui:UiBinder xmlns:ui='urn:ui:com.google.gwt.uibinder'
              xmlns:g='urn:import:com.google.gwt.user.client.ui' xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">
 	
+    <!--<g:AbsolutePanel ui:field="mapPanel"/>-->
+    <!--        <g:DockLayoutPanel unit='EM'>
+        <g:center> 
+            <g:VerticalPanel ui:field="mapPanel"/> 
+        </g:center> 
+        <g:west size="20"> 
+            <g:VerticalPanel ui:field="legendPanel" />
+        </g:west> 
+    </g:DockLayoutPanel>-->
+            
+            
     <g:LayoutPanel>
         <g:layer>
             <g:VerticalPanel ui:field="mapPanel"/>
         </g:layer>
         <g:layer>
-            <g:VerticalPanel ui:field="legendPanel" />
+            <g:VerticalPanel ui:field="legendPanel"/>
         </g:layer>
     </g:LayoutPanel>
 
 </ui:UiBinder>
 
-            <!--<g:AbsolutePanel ui:field="mapPanel"/>-->
-            <!--<g:DockLayoutPanel unit='EM'> -->
-            <!--<g:center> -->
-            <!--<g:VerticalPanel ui:field="myMainPanel"/> -->
-            <!--</g:center> -->
-            <!--<g:west size="20"> -->
-            <!--<g:FlowPanel> -->
-            <!--</g:FlowPanel> -->
-            <!--</g:west> -->
-            <!--</g:DockLayoutPanel> -->
-            <!--</g:AbsolutePanel>-->
+<!--<g:AbsolutePanel ui:field="mapPanel"/>-->
+<!--<g:DockLayoutPanel unit='EM'> -->
+<!--<g:center> -->
+<!--<g:VerticalPanel ui:field="myMainPanel"/> -->
+<!--</g:center> -->
+<!--<g:west size="20"> -->
+<!--<g:FlowPanel> -->
+<!--</g:FlowPanel> -->
+<!--</g:west> -->
+<!--</g:DockLayoutPanel> -->
+<!--</g:AbsolutePanel>-->

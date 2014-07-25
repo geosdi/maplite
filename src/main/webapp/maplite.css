@@ -123,21 +123,21 @@ h1 {
 }*/
 
 #map {
+    top: 0px;
     margin: 0;
     width: 100%;
     height: 100%;
 }
 
-#legend {
+#legendPanel {
     position: absolute;
-    top: 10px !important;
-    right: 0px!important;
-    bottom: 0px!important;
+    top: 10px!important;
+    left: 40px!important;
     padding: 0 20px!important;
     width: 225px!important;
     background: rgba(255,255,255,.2)!important;
-    overflow-x: auto!important;
-    z-index: 1000!important;
+    /*overflow-x: auto!important;*/
+    z-index: 750;
 }
 
 .olControlLayerSwitcher .layersDiv {
@@ -158,7 +158,7 @@ h1 {
     padding: 4px;
     width: 150px;
     background-color: #ddebfd;
-    background-image: url('webgisabcs/img/compass.gif');
+    background-image: url('img/compass.gif');
     background-repeat: no-repeat;
     background-position: center right;
     border: solid 1px #99bbe8;

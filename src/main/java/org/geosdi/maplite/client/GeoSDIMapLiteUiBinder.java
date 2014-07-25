@@ -39,12 +39,10 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
     private Map map;
 
-    interface ExampleUiBinderUiBinder extends
-            UiBinder<Widget, GeoSDIMapLiteUiBinder> {
+    interface MapLiteUiBinder extends UiBinder<Widget, GeoSDIMapLiteUiBinder> {
     }
 
-    private static ExampleUiBinderUiBinder ourUiBinder = GWT
-            .create(ExampleUiBinderUiBinder.class);
+    private static MapLiteUiBinder ourUiBinder = GWT.create(MapLiteUiBinder.class);
 
     @UiField
     VerticalPanel mapPanel;
@@ -59,8 +57,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     public GeoSDIMapLiteUiBinder() {
         initWidget(ourUiBinder.createAndBindUi(this));
         legendPanel.getElement().setId("legendPanel");
-        legendPanel
-                .add(new Image(
+        legendPanel.add(new Image(
                                 "http://b.dryicons.com/images/icon_sets/coquette_part_4_icons_set/png/64x64/palette.png"));
         legendPanel.add(new HTML("<span><h4>Legenda</h4></span>"));
 

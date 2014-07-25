@@ -47,58 +47,7 @@
             <timezone>+1</timezone>
         </developer>
     </developers>
-
-    <properties>
-        <!-- Convenience property to set the GWT version -->
-        <gwtVersion>2.6.1</gwtVersion>
-        <!-- GWT needs at least java 1.5 -->
-        <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    </properties>
-
-    <dependencies>
-        <dependency>
-            <groupId>org.gwtopenmaps.openlayers</groupId>
-            <artifactId>gwt-openlayers-client</artifactId>
-            <version>1.1-SNAPSHOT</version>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet</artifactId>
-            <version>${gwtVersion}</version>
-            <scope>runtime</scope>
-        </dependency>
-<!--        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-servlet-deps</artifactId>
-            <version>${gwtVersion}</version>
-            <scope>runtime</scope>
-        </dependency>-->
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-codeserver</artifactId>
-            <version>${gwtVersion}</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.google.gwt</groupId>
-            <artifactId>gwt-user</artifactId>
-            <version>${gwtVersion}</version>
-            <scope>provided</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.7</version>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.github.gwtbootstrap</groupId>
-            <artifactId>gwt-bootstrap</artifactId>
-            <version>2.3.2.0</version>
-        </dependency>
-    </dependencies>
-
+    
     <repositories>
         <repository>
             <id>gwt-bootstrap</id>
@@ -124,6 +73,70 @@
         </repository>
         
     </repositories>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-servlet</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-user</artifactId>
+            <version>${gwtVersion}</version>
+            <!--<scope>provided</scope>-->
+        </dependency>
+        
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <!--<scope>test</scope>-->
+        </dependency>
+        <dependency>
+            <groupId>javax.validation</groupId>
+            <artifactId>validation-api</artifactId>
+            <version>1.0.0.GA</version>
+            <classifier>sources</classifier>
+            <!--<scope>test</scope>-->
+        </dependency>
+        
+        <!--        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-codeserver</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>runtime</scope>
+        </dependency>-->
+        
+        <!--        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>provided</scope>
+        </dependency>-->
+        
+        <dependency>
+            <groupId>com.github.gwtbootstrap</groupId>
+            <artifactId>gwt-bootstrap</artifactId>
+            <version>2.3.2.0</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.gwtopenmaps.openlayers</groupId>
+            <artifactId>gwt-openlayers-client</artifactId>
+            <version>${gwt-ol-version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.11</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
 
     <build>
         <!-- Generate compiled stuff in the folder used for developing mode -->
@@ -184,7 +197,7 @@
             </plugin>
             
             <!-- Run the application using "mvn jetty:run" -->
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>org.mortbay.jetty</groupId>
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>7.5.2.v20111006</version>
@@ -255,5 +268,14 @@
             </plugin>
         </plugins>
     </build>
+    
+    <properties>
+        <!-- Convenience property to set the GWT version -->
+        <gwtVersion>2.6.1</gwtVersion>
+        <!-- GWT needs at least java 1.5 -->
+        <gwt-ol-version>1.1-SNAPSHOT</gwt-ol-version>
+        <webappDirectory>${project.build.directory}/${project.build.finalName}</webappDirectory>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
 
 </project>
