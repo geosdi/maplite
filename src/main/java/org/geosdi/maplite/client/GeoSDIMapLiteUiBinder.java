@@ -6,15 +6,11 @@ import org.gwtopenmaps.openlayers.client.Map;
 import org.gwtopenmaps.openlayers.client.MapOptions;
 import org.gwtopenmaps.openlayers.client.MapWidget;
 import org.gwtopenmaps.openlayers.client.Projection;
-import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import org.gwtopenmaps.openlayers.client.control.ScaleLine;
 import org.gwtopenmaps.openlayers.client.layer.OSM;
 import org.gwtopenmaps.openlayers.client.layer.OSMOptions;
-import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
 import org.gwtopenmaps.openlayers.client.layer.WMS;
-import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
-import org.gwtopenmaps.openlayers.client.layer.WMSParams;
 
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
@@ -25,9 +21,14 @@ import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import org.gwtopenmaps.openlayers.client.Size;
+import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
+import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
+import org.gwtopenmaps.openlayers.client.layer.WMSParams;
 
 public class GeoSDIMapLiteUiBinder extends Composite {
 
@@ -36,7 +37,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     protected static final String GET_LEGEND_REQUEST = "?REQUEST=GetLegendGraphic"
             + "&VERSION=1.0.0&FORMAT=image/png&LAYER=";
 
-    protected static final String wmsUrl = "http://geoserver.arij.org/geoserver/wms";
+    protected static final String wmsUrl = "http://geoserver.wfppal.org/geoserver/wms";
 
     private Map map;
 
@@ -49,7 +50,10 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     VerticalPanel mapPanel;
 
     @UiField
-    VerticalPanel legendPanel;
+    VerticalPanel mapInfoPanel;
+    
+    @UiField
+    VerticalPanel layersPanel;
 
     Image image;
 
@@ -57,17 +61,20 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
     public GeoSDIMapLiteUiBinder() {
         initWidget(ourUiBinder.createAndBindUi(this));
-        legendPanel.getElement().setId("legendPanel");
-        legendPanel.add(new Image(
-                "http://b.dryicons.com/images/icon_sets/coquette_part_4_icons_set/png/64x64/palette.png"));
-        legendPanel.add(new HTML("<span><h4>Legenda</h4></span>"));
-
+        mapInfoPanel.getElement().setId("mapInfoPanel");
+        layersPanel.getElement().setId("layersPanel");
+        
+        mapInfoPanel.add(new HTML("<span><h4>#Gaza</h4></span>"));
+        mapInfoPanel.add(new HTML("<span><h6>Names, ages of casualties in Gaza from July 8th.</h6></span>"));
+        
+        
+        
         mapPanel.add(initMap());
 
     }
 
     private MapWidget initMap() {
-
+        
         String layers = Window.Location.getParameter("layers");
         String x = Window.Location.getParameter("x");
         String y = Window.Location.getParameter("y");
@@ -96,7 +103,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
             String[] layerArray = layers.split(";");
 
             for (int i = 0; i < layerArray.length; i++) {
-                String layerName = new String(layerArray[i]);
+                final String layerName = new String(layerArray[i]);
                 WMSOptions wmsLayerParams = new WMSOptions();
                 wmsLayerParams.setTileSize(new Size(256, 256));
                 wmsLayerParams.setTransitionEffect(TransitionEffect.RESIZE);
@@ -110,6 +117,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
                 wmsLayer = new WMS(layerName, wmsUrl, wmsParams, wmsLayerParams);
                 wmsLayer.setIsBaseLayer(false);
+//                wmsLayer.setSingleTile(true);
                 map.addLayer(wmsLayer);
 
                 StringBuilder imageURL = new StringBuilder();
@@ -119,21 +127,28 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
                 image = new Image(imageURL.toString());
 
-                CheckBox check = new CheckBox(layerName);
+                final CheckBox check = new CheckBox(layerName);
                 check.setValue(true);
-
+                check.setTitle(layerName);
+                check.ensureDebugId("gwt-uid-1");
                 check.addClickHandler(new ClickHandler() {
 
                     @Override
                     public void onClick(ClickEvent event) {
                         CheckBox checkBox = (CheckBox) event.getSource();
+                        if(!checkBox.getValue()){
+                            
+                        }
                         manageLayerVisibility(checkBox.getValue(),
-                                checkBox.getText());
+                                layerName);
                     }
                 });
+                
+                
 
-                legendPanel.add(check);
-                legendPanel.add(image);
+                layersPanel.add(check);
+//                layersPanel.add(new HTMLPanel("<div id='clearfix'/>"));
+                layersPanel.add(image);
 
             }
 

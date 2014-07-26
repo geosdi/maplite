@@ -19,7 +19,10 @@
             <g:VerticalPanel ui:field="mapPanel"/>
         </g:layer>
         <g:layer>
-            <g:VerticalPanel ui:field="legendPanel"/>
+            <g:VerticalPanel ui:field="mapInfoPanel"/>
+        </g:layer>
+        <g:layer>
+            <g:VerticalPanel ui:field="layersPanel"/>
         </g:layer>
     </g:LayoutPanel>
 
