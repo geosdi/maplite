@@ -130,15 +130,12 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 final CheckBox check = new CheckBox(layerName);
                 check.setValue(true);
                 check.setTitle(layerName);
-                check.ensureDebugId("gwt-uid-1");
                 check.addClickHandler(new ClickHandler() {
 
                     @Override
                     public void onClick(ClickEvent event) {
                         CheckBox checkBox = (CheckBox) event.getSource();
-                        if(!checkBox.getValue()){
-                            
-                        }
+                        
                         manageLayerVisibility(checkBox.getValue(),
                                 layerName);
                     }
@@ -155,7 +152,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         }
 
         // Lets add some default controls to the map
-        map.addControl(new ScaleLine()); // Display the scaleline
+//        map.addControl(new ScaleLine()); // Display the scaleline
         map.addControl(new MousePosition());
 
         double lon = 16.17582;
