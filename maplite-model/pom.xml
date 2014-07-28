@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<project xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd" xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <modelVersion>4.0.0</modelVersion>
+    
+    <parent>
+        <groupId>org.geosdi</groupId>
+        <artifactId>maplite</artifactId>
+        <version>1.0-SNAPSHOT</version>
+    </parent>
+    
+    <groupId>org.geosdi</groupId>
+    <artifactId>maplite-model</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    
+    <name>GEOSDI :: == MapLite Model</name>
+    
+    <url>http://www.geosdi.org</url>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.geosdi</groupId>
+            <artifactId>geoplatform-sharing</artifactId>
+            <version>${geoplatform-version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>${junit-version}</version>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+    
+    <build>
+
+        <plugins>
+            <!-- ... or ask the plugin to detect them based on gwt modules files and 
+            copy the required java sources -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <executions>
+                    <!-- GWT version detected from dependencyManagement -->
+                    <execution>
+                        <goals>
+                            <goal>resources</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-source-plugin</artifactId>
+            </plugin>
+
+            <plugin>
+                <artifactId>maven-resources-plugin</artifactId>
+            </plugin>
+        </plugins>
+
+        <!-- TODO: the resources stuff hardcodes paths to source + test directories, 
+        we should be able to use some properties here -->
+        <resources>
+            <resource>
+                <directory>${basedir}/src/main/java</directory>
+                <includes>
+                    <include>**/*.txt</include>
+                    <include>**/*.sql</include>
+                    <include>**/*.html</include>
+                    <include>**/*.xml</include>
+                    <include>**/*.utf</include>
+                    <include>**/*.properties</include>
+                    <include>**/*.serialized</include>
+                    <include>**/*.xsd</include>
+                    <include>META-INF/*.jai</include>
+                    <include>META-INF/mailcap</include>
+                    <include>META-INF/services/**</include>
+                    <include>applicationContext.xml</include>
+                    <include>**/*.ftl</include>
+                    <include>**/*.css</include>
+                    <include>**/*.js</include>
+                    <include>**/*.png</include>
+                    <include>**/*.gif</include>
+                    <include>**/*.sld</include>
+                    <include>**/*.ico</include>
+                </includes>
+            </resource>
+            <resource>
+                <directory>${basedir}/src/main/resources</directory>
+                <includes>
+                    <include>**/*</include>
+                </includes>
+            </resource>
+        </resources>
+
+    </build>
+        
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    </properties>
+</project>

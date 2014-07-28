@@ -15,6 +15,7 @@ import org.gwtopenmaps.openlayers.client.layer.WMS;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
@@ -25,6 +26,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
 import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
 import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
@@ -51,7 +53,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
     @UiField
     VerticalPanel mapInfoPanel;
-    
+
     @UiField
     VerticalPanel layersPanel;
 
@@ -63,19 +65,17 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         initWidget(ourUiBinder.createAndBindUi(this));
         mapInfoPanel.getElement().setId("mapInfoPanel");
         layersPanel.getElement().setId("layersPanel");
-        
+
         mapInfoPanel.add(new HTML("<span><h4>#Gaza</h4></span>"));
         mapInfoPanel.add(new HTML("<span><h6>Names, ages of casualties in Gaza from July 8th.</h6></span>"));
-        
-        
-        
+
         mapPanel.add(initMap());
 
     }
 
     private MapWidget initMap() {
-        
-        String layers = Window.Location.getParameter("layers");
+
+        String mapID = Window.Location.getParameter("mapID");
         String x = Window.Location.getParameter("x");
         String y = Window.Location.getParameter("y");
         String zoom = Window.Location.getParameter("zoom");
@@ -99,58 +99,67 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         map.addLayer(osm);
         mapPanel.getElement().setId("map");
 
-        if (layers != null) {
-            String[] layerArray = layers.split(";");
-
-            for (int i = 0; i < layerArray.length; i++) {
-                final String layerName = new String(layerArray[i]);
-                WMSOptions wmsLayerParams = new WMSOptions();
-                wmsLayerParams.setTileSize(new Size(256, 256));
-                wmsLayerParams.setTransitionEffect(TransitionEffect.RESIZE);
-                wmsLayerParams.setProjection("EPSG:3857");
-
-                WMSParams wmsParams = new WMSParams();
-                wmsParams.setFormat("image/png");
-                wmsParams.setLayers(layerName);
-                wmsParams.setStyles("");
-                wmsParams.setTransparent(true);
-
-                wmsLayer = new WMS(layerName, wmsUrl, wmsParams, wmsLayerParams);
-                wmsLayer.setIsBaseLayer(false);
-//                wmsLayer.setSingleTile(true);
-                map.addLayer(wmsLayer);
-
-                StringBuilder imageURL = new StringBuilder();
-                imageURL.append(wmsUrl).append(GET_LEGEND_REQUEST)
-                        .append(layerName)
-                        .append("&scale=" + map.getScale() + "&service=WMS");
-
-                image = new Image(imageURL.toString());
-
-                final CheckBox check = new CheckBox(layerName);
-                check.setValue(true);
-                check.setTitle(layerName);
-                check.addClickHandler(new ClickHandler() {
-
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        CheckBox checkBox = (CheckBox) event.getSource();
-                        
-                        manageLayerVisibility(checkBox.getValue(),
-                                layerName);
-                    }
-                });
-                
-                
-
-                layersPanel.add(check);
-//                layersPanel.add(new HTMLPanel("<div id='clearfix'/>"));
-                layersPanel.add(image);
-
+        if (!Strings.isNullOrEmpty(mapID)) {
+            mapID = URL.decode(mapID);
+            if (mapID.indexOf('-') != -1) {
+                String project = mapID.substring(0, mapID.indexOf('-'));
+                String account = mapID.substring(mapID.indexOf('-'), mapID.length());
+                System.out.println("Project: " + project);
+                System.out.println("Account: " + account);
             }
-
         }
 
+//        if (mapID != null) {
+//            String[] layerArray = mapID.split(";");
+//
+//            for (int i = 0; i < layerArray.length; i++) {
+//                final String layerName = new String(layerArray[i]);
+//                WMSOptions wmsLayerParams = new WMSOptions();
+//                wmsLayerParams.setTileSize(new Size(256, 256));
+//                wmsLayerParams.setTransitionEffect(TransitionEffect.RESIZE);
+//                wmsLayerParams.setProjection("EPSG:3857");
+//
+//                WMSParams wmsParams = new WMSParams();
+//                wmsParams.setFormat("image/png");
+//                wmsParams.setLayers(layerName);
+//                wmsParams.setStyles("");
+//                wmsParams.setTransparent(true);
+//
+//                wmsLayer = new WMS(layerName, wmsUrl, wmsParams, wmsLayerParams);
+//                wmsLayer.setIsBaseLayer(false);
+////                wmsLayer.setSingleTile(true);
+//                map.addLayer(wmsLayer);
+//
+//                StringBuilder imageURL = new StringBuilder();
+//                imageURL.append(wmsUrl).append(GET_LEGEND_REQUEST)
+//                        .append(layerName)
+//                        .append("&scale=" + map.getScale() + "&service=WMS");
+//
+//                image = new Image(imageURL.toString());
+//
+//                final CheckBox check = new CheckBox(layerName);
+//                check.setValue(true);
+//                check.setTitle(layerName);
+//                check.addClickHandler(new ClickHandler() {
+//
+//                    @Override
+//                    public void onClick(ClickEvent event) {
+//                        CheckBox checkBox = (CheckBox) event.getSource();
+//                        
+//                        manageLayerVisibility(checkBox.getValue(),
+//                                layerName);
+//                    }
+//                });
+//                
+//                
+//
+//                layersPanel.add(check);
+////                layersPanel.add(new HTMLPanel("<div id='clearfix'/>"));
+//                layersPanel.add(image);
+//
+//            }
+//
+//        }
         // Lets add some default controls to the map
 //        map.addControl(new ScaleLine()); // Display the scaleline
         map.addControl(new MousePosition());

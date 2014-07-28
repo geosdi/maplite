@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <module rename-to='maplite'>
     
+    <inherits name="com.google.gwt.logging.Logging"/>
     <inherits name='com.google.gwt.user.User'/>
     <inherits name='com.google.gwt.junit.JUnit'/>
     <inherits name='com.google.gwt.user.theme.standard.Standard'/>
@@ -8,10 +9,12 @@
     <!-- ADDING GOOGLE-GUAVA MODULE -->
     <inherits name="com.google.common.collect.Collect"/>
     <inherits name='org.gwtopenmaps.openlayers.OpenLayers'/>
+    <inherits name='org.geosdi.geoplatform.gui.ApiCommandModule'/>
+    
     <entry-point class='org.geosdi.maplite.client.GeoSDIMapLite'/>
+    
     <source path='client'/>
     <source path='shared'/>
-
     
     <!--pay attention in this part-->
     <source path='resources'/>
@@ -22,6 +25,20 @@
         <exclude name="** /*.java"/>
         <exclude name="** /*.class"/>
     </public>
+    
+    <!--Logging configuration-->
+    <set-property name="gwt.logging.enabled" value="TRUE"/>
+    <!--values="ALL, FINEST, FINER, FINE, CONFIG, INFO, WARNING, SEVERE"-->
+    <set-property name="gwt.logging.logLevel" value="INFO"/>
+    <set-property name="gwt.logging.developmentModeHandler" value="ENABLED" />  
+    <set-property name="gwt.logging.systemHandler" value="ENABLED" />
+    <set-property name="gwt.logging.consoleHandler" value="ENABLED"/> 
+    <!-- Disable the firebug handler as an example -->
+    <set-property name="gwt.logging.firebugHandler" value="DISABLED" />
+    <!-- Enable the simple remote handler -->
+    <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />
+    <set-property name="gwt.logging.popupHandler" value="DISABLED" />
+    <!--END Logging configuration-->
     
     <add-linker name="xsiframe" />
 </module>
