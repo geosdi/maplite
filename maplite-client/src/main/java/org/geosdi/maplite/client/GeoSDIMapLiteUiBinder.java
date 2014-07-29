@@ -1,40 +1,39 @@
 package org.geosdi.maplite.client;
 
 import com.google.common.base.Strings;
+import com.google.gwt.core.client.GWT;
+import com.google.gwt.http.client.URL;
+import com.google.gwt.uibinder.client.UiBinder;
+import com.google.gwt.uibinder.client.UiField;
+import com.google.gwt.user.client.Window;
+import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Composite;
+import com.google.gwt.user.client.ui.HTML;
+import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.VerticalPanel;
+import com.google.gwt.user.client.ui.Widget;
+import java.util.logging.Logger;
+import org.geosdi.maplite.client.service.MapLiteServiceRemote;
+import org.geosdi.maplite.shared.GPClientProject;
 import org.gwtopenmaps.openlayers.client.LonLat;
 import org.gwtopenmaps.openlayers.client.Map;
 import org.gwtopenmaps.openlayers.client.MapOptions;
 import org.gwtopenmaps.openlayers.client.MapWidget;
 import org.gwtopenmaps.openlayers.client.Projection;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
-import org.gwtopenmaps.openlayers.client.control.ScaleLine;
 import org.gwtopenmaps.openlayers.client.layer.OSM;
 import org.gwtopenmaps.openlayers.client.layer.OSMOptions;
 import org.gwtopenmaps.openlayers.client.layer.WMS;
 
-import com.google.gwt.core.client.GWT;
-import com.google.gwt.event.dom.client.ClickEvent;
-import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.http.client.URL;
-import com.google.gwt.uibinder.client.UiBinder;
-import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Window;
-import com.google.gwt.user.client.ui.CheckBox;
-import com.google.gwt.user.client.ui.Composite;
-import com.google.gwt.user.client.ui.HTML;
-import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
-import com.google.gwt.user.client.ui.VerticalPanel;
-import com.google.gwt.user.client.ui.Widget;
-import it.geosolutions.geoserver.rest.GeoServerRESTPublisher;
-import org.gwtopenmaps.openlayers.client.Size;
-import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
-import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
-import org.gwtopenmaps.openlayers.client.layer.WMSParams;
-
+/**
+ * @author Nazzareno Sileno - CNR IMAA geoSDI Group
+ * @email nazzareno.sileno@geosdi.org
+ */
 public class GeoSDIMapLiteUiBinder extends Composite {
 
-    private Projection DEFAULT_PROJECTION = new Projection("EPSG:4326");
+    private final static Logger logger = Logger.getLogger("");
+
+    private final static Projection DEFAULT_PROJECTION = new Projection("EPSG:4326");
 
     protected static final String GET_LEGEND_REQUEST = "?REQUEST=GetLegendGraphic"
             + "&VERSION=1.0.0&FORMAT=image/png&LAYER=";
@@ -103,13 +102,53 @@ public class GeoSDIMapLiteUiBinder extends Composite {
             mapID = URL.decode(mapID);
             if (mapID.indexOf('-') != -1) {
                 String project = mapID.substring(0, mapID.indexOf('-'));
-                String account = mapID.substring(mapID.indexOf('-'), mapID.length());
-                System.out.println("Project: " + project);
-                System.out.println("Account: " + account);
+                String account = mapID.substring(mapID.indexOf('-') + 1, mapID.length());
+                logger.info("********** Found project and map: " + project + " - " + account);
+
+                MapLiteServiceRemote.Util.getInstance().loadProject(
+                        Long.parseLong(project), Long.parseLong(account),
+                        new AsyncCallback<GPClientProject>() {
+
+                            @Override
+                            public void onFailure(Throwable caught) {
+                                GWT.log("Error loading project from stack: " + caught, caught);
+                            }
+
+                            @Override
+                            public void onSuccess(GPClientProject result) {
+                                GWT.log("Loaded project from stack: " + result.toString());
+                                addResourcesToTheMap(result);
+                            }
+                        });
             }
         }
 
-//        if (mapID != null) {
+        // Lets add some default controls to the map
+//        map.addControl(new ScaleLine()); // Display the scaleline
+        map.addControl(new MousePosition());
+
+        double lon = 16.17582;
+        double lat = 42.76989;
+        int zommLevel = 5;
+        if (!Strings.isNullOrEmpty(x) && !Strings.isNullOrEmpty(y)
+                && !Strings.isNullOrEmpty(zoom)) {
+
+            lon = Double.parseDouble(x);
+            lat = Double.parseDouble(y);
+            zommLevel = Integer.parseInt(zoom);
+            // Center and zoom to a location
+            // system
+        }
+        LonLat lonLat = new LonLat(lon, lat);
+        lonLat.transform(DEFAULT_PROJECTION.getProjectionCode(),
+                map.getProjection()); // transform lonlat to OSM coordinate
+        map.setCenter(lonLat, zommLevel);
+
+        return mapWidget;
+    }
+    
+    private void addResourcesToTheMap(GPClientProject clientProject){
+        //        if (mapID != null) {
 //            String[] layerArray = mapID.split(";");
 //
 //            for (int i = 0; i < layerArray.length; i++) {
@@ -160,28 +199,6 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 //            }
 //
 //        }
-        // Lets add some default controls to the map
-//        map.addControl(new ScaleLine()); // Display the scaleline
-        map.addControl(new MousePosition());
-
-        double lon = 16.17582;
-        double lat = 42.76989;
-        int zommLevel = 5;
-        if (!Strings.isNullOrEmpty(x) && !Strings.isNullOrEmpty(y)
-                && !Strings.isNullOrEmpty(zoom)) {
-
-            lon = Double.parseDouble(x);
-            lat = Double.parseDouble(y);
-            zommLevel = Integer.parseInt(zoom);
-            // Center and zoom to a location
-            // system
-        }
-        LonLat lonLat = new LonLat(lon, lat);
-        lonLat.transform(DEFAULT_PROJECTION.getProjectionCode(),
-                map.getProjection()); // transform lonlat to OSM coordinate
-        map.setCenter(lonLat, zommLevel);
-
-        return mapWidget;
     }
 
     private void manageLayerVisibility(Boolean value, String layerName) {

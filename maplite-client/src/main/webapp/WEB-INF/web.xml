@@ -3,7 +3,32 @@
         PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
         "http://java.sun.com/dtd/web-app_2_3.dtd">
 
-<web-app>
+<web-app version="3.0" xmlns="http://java.sun.com/xml/ns/j2ee"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee 
+            http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" id="mapLite" metadata-complete="true">
+    
+    
+    <!-- pick up all spring application contexts -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath*:applicationContext.xml</param-value>
+    </context-param>
+    <!-- spring context loader -->
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+    
+    <servlet>
+        <servlet-name>MapLiteService</servlet-name>
+        <servlet-class>org.geosdi.maplite.server.gwt.MapLiteRemoteImpl</servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>MapLiteService</servlet-name>
+        <url-pattern>/maplite/MapLiteService</url-pattern>
+    </servlet-mapping>
+    
+    
     <!-- Default page to serve -->
     <welcome-file-list>
         <welcome-file>geoSDIMapLite.html</welcome-file>

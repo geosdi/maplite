@@ -89,14 +89,20 @@
         </dependency>
         
         <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring-version}</version>
+        </dependency>
+        
+        <dependency>
             <groupId>org.geosdi</groupId>
-            <artifactId>geoplatform-command</artifactId>
+            <artifactId>gp-shared-beans</artifactId>
             <version>${geoplatform-version}</version>
         </dependency>
         
         <dependency>
             <groupId>org.geosdi</groupId>
-            <artifactId>geoplatform-server-api</artifactId>
+            <artifactId>geoplatform-ws-basic-connector</artifactId>
             <version>${geoplatform-version}</version>
         </dependency>
         
