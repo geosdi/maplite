@@ -145,6 +145,7 @@
                 <artifactId>jetty-maven-plugin</artifactId>
                 <version>8.1.15.v20140411</version>
                 <configuration>
+                    <contextXml>${basedir}/src/main/webapp/WEB-INF/jetty-context.xml</contextXml>
                     <scanIntervalSeconds>10</scanIntervalSeconds>
                     <stopPort>9966</stopPort>
                     <stopKey>stop-jetty</stopKey>
