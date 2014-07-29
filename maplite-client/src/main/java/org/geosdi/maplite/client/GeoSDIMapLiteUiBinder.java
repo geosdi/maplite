@@ -75,9 +75,6 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         mapInfoPanel.getElement().setId("mapInfoPanel");
         layersPanel.getElement().setId("layersPanel");
 
-        mapInfoPanel.add(new HTML("<span><h4>#Gaza</h4></span>"));
-        mapInfoPanel.add(new HTML("<span><h6>Names, ages of casualties in Gaza from July 8th.</h6></span>"));
-
         mapPanel.add(initMap());
 
     }
@@ -127,6 +124,8 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                             @Override
                             public void onSuccess(GPClientProject result) {
                                 logger.finest("Loaded project from stack: " + result.toString());
+                                mapInfoPanel.add(new HTML("<span><h4>#" + result.getName() + "</h4></span>"));
+//                                mapInfoPanel.add(new HTML("<span><h6>Names, ages of casualties in Gaza from July 8th.</h6></span>"));
                                 addResourcesToTheMap(result);
                             }
                         });
