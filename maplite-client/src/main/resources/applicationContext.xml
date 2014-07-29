@@ -9,6 +9,7 @@
        default-autowire="byName">
     
     <!--org.geosdi.geoplatform.connectors.ws.service-->
-    <context:component-scan base-package="org.geosdi.maplite, org.geosdi.geoplatform.services" />
+    <context:component-scan base-package="org.geosdi.maplite,
+                            org.geosdi.maplite.server.service.impl" />
     
 </beans>
