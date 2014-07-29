@@ -27,12 +27,13 @@
     </listener>
     
     <servlet>
-        <servlet-name>MapLiteService</servlet-name>
+        <servlet-name>MapLiteServiceRemote</servlet-name>
         <servlet-class>org.geosdi.maplite.server.gwt.MapLiteRemoteImpl</servlet-class>
+        <load-on-startup>1</load-on-startup>
     </servlet>
     <servlet-mapping>
-        <servlet-name>MapLiteService</servlet-name>
-        <url-pattern>/maplite/MapLiteService</url-pattern>
+        <servlet-name>MapLiteServiceRemote</servlet-name>
+        <url-pattern>/maplite/MapLiteServiceRemote</url-pattern>
     </servlet-mapping>
     
     
