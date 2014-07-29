@@ -2,28 +2,40 @@ package org.geosdi.maplite.client;
 
 import com.google.common.base.Strings;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
+import java.util.List;
 import java.util.logging.Logger;
+import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
 import org.geosdi.maplite.client.service.MapLiteServiceRemote;
+import org.geosdi.maplite.shared.ClientRasterInfo;
 import org.geosdi.maplite.shared.GPClientProject;
+import org.geosdi.maplite.shared.GPFolderClientInfo;
+import org.geosdi.maplite.shared.IGPFolderElements;
 import org.gwtopenmaps.openlayers.client.LonLat;
 import org.gwtopenmaps.openlayers.client.Map;
 import org.gwtopenmaps.openlayers.client.MapOptions;
 import org.gwtopenmaps.openlayers.client.MapWidget;
 import org.gwtopenmaps.openlayers.client.Projection;
+import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
+import com.google.gwt.event.dom.client.ClickEvent;
 import org.gwtopenmaps.openlayers.client.layer.OSM;
 import org.gwtopenmaps.openlayers.client.layer.OSMOptions;
+import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
 import org.gwtopenmaps.openlayers.client.layer.WMS;
+import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
+import org.gwtopenmaps.openlayers.client.layer.WMSParams;
 
 /**
  * @author Nazzareno Sileno - CNR IMAA geoSDI Group
@@ -37,8 +49,6 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
     protected static final String GET_LEGEND_REQUEST = "?REQUEST=GetLegendGraphic"
             + "&VERSION=1.0.0&FORMAT=image/png&LAYER=";
-
-    protected static final String wmsUrl = "http://geoserver.wfppal.org/geoserver/wms";
 
     private Map map;
 
@@ -111,12 +121,12 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
                             @Override
                             public void onFailure(Throwable caught) {
-                                GWT.log("Error loading project from stack: " + caught, caught);
+                                logger.warning("Error loading project from stack: " + caught);
                             }
 
                             @Override
                             public void onSuccess(GPClientProject result) {
-                                GWT.log("Loaded project from stack: " + result.toString());
+                                logger.finest("Loaded project from stack: " + result.toString());
                                 addResourcesToTheMap(result);
                             }
                         });
@@ -146,59 +156,69 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
         return mapWidget;
     }
-    
-    private void addResourcesToTheMap(GPClientProject clientProject){
-        //        if (mapID != null) {
-//            String[] layerArray = mapID.split(";");
-//
-//            for (int i = 0; i < layerArray.length; i++) {
-//                final String layerName = new String(layerArray[i]);
-//                WMSOptions wmsLayerParams = new WMSOptions();
-//                wmsLayerParams.setTileSize(new Size(256, 256));
-//                wmsLayerParams.setTransitionEffect(TransitionEffect.RESIZE);
-//                wmsLayerParams.setProjection("EPSG:3857");
-//
-//                WMSParams wmsParams = new WMSParams();
-//                wmsParams.setFormat("image/png");
-//                wmsParams.setLayers(layerName);
-//                wmsParams.setStyles("");
-//                wmsParams.setTransparent(true);
-//
-//                wmsLayer = new WMS(layerName, wmsUrl, wmsParams, wmsLayerParams);
-//                wmsLayer.setIsBaseLayer(false);
-////                wmsLayer.setSingleTile(true);
-//                map.addLayer(wmsLayer);
-//
-//                StringBuilder imageURL = new StringBuilder();
-//                imageURL.append(wmsUrl).append(GET_LEGEND_REQUEST)
-//                        .append(layerName)
-//                        .append("&scale=" + map.getScale() + "&service=WMS");
-//
-//                image = new Image(imageURL.toString());
-//
-//                final CheckBox check = new CheckBox(layerName);
-//                check.setValue(true);
-//                check.setTitle(layerName);
-//                check.addClickHandler(new ClickHandler() {
-//
-//                    @Override
-//                    public void onClick(ClickEvent event) {
-//                        CheckBox checkBox = (CheckBox) event.getSource();
-//                        
-//                        manageLayerVisibility(checkBox.getValue(),
-//                                layerName);
-//                    }
-//                });
-//                
-//                
-//
-//                layersPanel.add(check);
-////                layersPanel.add(new HTMLPanel("<div id='clearfix'/>"));
-//                layersPanel.add(image);
-//
-//            }
-//
-//        }
+
+    private void addResourcesToTheMap(GPClientProject clientProject) {
+        if (clientProject != null) {
+            for (GPFolderClientInfo folder : GPSharedUtils.safeList(clientProject.getRootFolders())) {
+                this.addFolderElementsToheMap(folder.getFolderElements());
+            }
+        }
+    }
+
+    private void addFolderElementsToheMap(List<IGPFolderElements> folderElements) {
+        logger.finest("**** addFolderElementsToheMap: " + folderElements.toString());
+        for (IGPFolderElements folderElement : GPSharedUtils.safeList(folderElements)) {
+            if (folderElement instanceof GPFolderClientInfo) {
+                this.addFolderElementsToheMap(((GPFolderClientInfo) folderElement).getFolderElements());
+            } else if (folderElement instanceof ClientRasterInfo) {
+                ClientRasterInfo raster = (ClientRasterInfo) folderElement;
+                final String layerName = new String(raster.getLayerName());
+                WMSOptions wmsLayerParams = new WMSOptions();
+                wmsLayerParams.setTileSize(new Size(256, 256));
+                wmsLayerParams.setTransitionEffect(TransitionEffect.RESIZE);
+                wmsLayerParams.setProjection("EPSG:3857");
+
+                WMSParams wmsParams = new WMSParams();
+                wmsParams.setFormat("image/png");
+                wmsParams.setLayers(layerName);
+                if (raster.getStyles() != null && !raster.getStyles().isEmpty()) {
+                    wmsParams.setStyles(raster.getStyles().get(0).getStyleString());
+                } else {
+                    wmsParams.setStyles("");
+                }
+                wmsParams.setTransparent(true);
+
+                wmsLayer = new WMS(layerName, raster.getDataSource(), wmsParams, wmsLayerParams);
+                wmsLayer.setIsBaseLayer(false);
+//                wmsLayer.setSingleTile(true);
+                map.addLayer(wmsLayer);
+
+                StringBuilder imageURL = new StringBuilder();
+                imageURL.append(raster.getDataSource()).append(GET_LEGEND_REQUEST)
+                        .append(layerName)
+                        .append("&scale=" + map.getScale() + "&service=WMS");
+
+                image = new Image(imageURL.toString());
+
+                final CheckBox check = new CheckBox(layerName);
+                check.setValue(true);
+                check.setTitle(layerName);
+                check.addClickHandler(new ClickHandler() {
+
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        CheckBox checkBox = (CheckBox) event.getSource();
+
+                        manageLayerVisibility(checkBox.getValue(),
+                                layerName);
+                    }
+                });
+
+                layersPanel.add(check);
+//                layersPanel.add(new HTMLPanel("<div id='clearfix'/>"));
+                layersPanel.add(image);
+            }
+        }
     }
 
     private void manageLayerVisibility(Boolean value, String layerName) {

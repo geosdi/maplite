@@ -244,7 +244,7 @@ public class MapLiteService implements IMapLiteService {
     @Override
     public GPClientProject loadProject(Long projectId, Long accountId,
             HttpServletRequest request) throws MapLiteException {
-        logger.info("Executing Basic Load Style Command");
+        logger.debug("Executing Load Project");
         ProjectDTO projectDTO = null;
         try {
             projectDTO = this.geoPlatformServiceClient.
