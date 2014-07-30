@@ -63,11 +63,11 @@
             <scope>provided</scope>
         </dependency>-->
         
-        <dependency>
+<!--        <dependency>
             <groupId>com.github.gwtbootstrap</groupId>
             <artifactId>gwt-bootstrap</artifactId>
             <version>${gwt-bootstrap-version}</version>
-        </dependency>
+        </dependency>-->
         
         <dependency>
             <groupId>org.gwtopenmaps.openlayers</groupId>
@@ -161,6 +161,26 @@
                     <!--</systemProperty> -->
 
                     <!--</systemProperties> -->
+                    <executions>
+                        <execution>
+                            <id>start-jetty</id>
+                            <phase>pre-integration-test</phase>
+                            <goals>
+                                <goal>run</goal>
+                            </goals>
+                            <configuration>
+                                <daemon>true</daemon>
+                                <scanIntervalSeconds>0</scanIntervalSeconds>
+                            </configuration>
+                        </execution>
+                        <execution>
+                            <id>stop-jetty</id>
+                            <phase>post-integration-test</phase>
+                            <goals>
+                                <goal>stop</goal>
+                            </goals>
+                        </execution>
+                    </executions>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
                             <port>9393</port>
@@ -171,27 +191,6 @@
                     </connectors>
                 </configuration>
             </plugin>
-            
-            <!-- Run the application using "mvn jetty:run" -->
-            <!--            <plugin>
-                <groupId>org.mortbay.jetty</groupId>
-                <artifactId>jetty-maven-plugin</artifactId>
-                <version>7.5.2.v20111006</version>
-                <configuration>
-                    <webAppSourceDirectory>${basedir}/war</webAppSourceDirectory>
-                    <webAppConfig>
-                        <contextPath>/</contextPath>
-                        <allowDuplicateFragmentNames>true</allowDuplicateFragmentNames>
-                    </webAppConfig>
-                    <connectors>
-                        <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
-                            <port>9393</port>
-                            <maxIdleTime>60000</maxIdleTime>
-                        </connector>
-                    </connectors>
-                    <reload>manual</reload>
-                </configuration>
-            </plugin>-->
 
             <!-- GWT Maven Plugin -->
             <plugin>
@@ -200,7 +199,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <goal>compile</goal>
+                            <!--<goal>compile</goal>-->
                             <goal>test</goal>
                             <!--<goal>i18n</goal>-->
                             <goal>generateAsync</goal>

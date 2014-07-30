@@ -30,6 +30,7 @@ import org.gwtopenmaps.openlayers.client.Projection;
 import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import com.google.gwt.event.dom.client.ClickEvent;
+import com.google.gwt.user.client.ui.HTMLPanel;
 import org.gwtopenmaps.openlayers.client.layer.OSM;
 import org.gwtopenmaps.openlayers.client.layer.OSMOptions;
 import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
@@ -58,7 +59,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     private static MapLiteUiBinder ourUiBinder = GWT.create(MapLiteUiBinder.class);
 
     @UiField
-    VerticalPanel mapPanel;
+    HTMLPanel mapPanel;
 
     @UiField
     VerticalPanel mapInfoPanel;
@@ -75,7 +76,12 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         mapInfoPanel.getElement().setId("mapInfoPanel");
         layersPanel.getElement().setId("layersPanel");
 
+//        layersPanel.setHeight("150px");
+//        layersPanel.setLayoutData();
+
+//        mapPanel.setSize("100%", "100%");
         mapPanel.add(initMap());
+        mapPanel.getElement().setId("map");
 
     }
 
@@ -103,7 +109,6 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         osm.setIsBaseLayer(true);
         map = mapWidget.getMap();
         map.addLayer(osm);
-        mapPanel.getElement().setId("map");
 
         if (!Strings.isNullOrEmpty(mapID)) {
             mapID = URL.decode(mapID);
@@ -159,16 +164,16 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     private void addResourcesToTheMap(GPClientProject clientProject) {
         if (clientProject != null) {
             for (GPFolderClientInfo folder : GPSharedUtils.safeList(clientProject.getRootFolders())) {
-                this.addFolderElementsToheMap(folder.getFolderElements());
+                this.addFolderElementsToTheMap(folder.getFolderElements());
             }
         }
     }
 
-    private void addFolderElementsToheMap(List<IGPFolderElements> folderElements) {
+    private void addFolderElementsToTheMap(List<IGPFolderElements> folderElements) {
         logger.finest("**** addFolderElementsToheMap: " + folderElements.toString());
         for (IGPFolderElements folderElement : GPSharedUtils.safeList(folderElements)) {
             if (folderElement instanceof GPFolderClientInfo) {
-                this.addFolderElementsToheMap(((GPFolderClientInfo) folderElement).getFolderElements());
+                this.addFolderElementsToTheMap(((GPFolderClientInfo) folderElement).getFolderElements());
             } else if (folderElement instanceof ClientRasterInfo) {
                 ClientRasterInfo raster = (ClientRasterInfo) folderElement;
                 final String layerName = new String(raster.getLayerName());
