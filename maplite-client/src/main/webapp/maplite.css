@@ -134,20 +134,27 @@ h1 {
 
 table#mapInfoPanel td {
     padding: 0px 16px 0px;
+    font-size: 1.6em;
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    padding: 0px 16px 0px;
 }
 
-table#layersPanel td {
+#layersPanel span{
     padding: 0px 16px 0px;
     border-bottom: 1px solid #e5e5e5;
     -webkit-box-shadow: 0 2px 2px rgba(0,0,0,.05);
 }
 
-table#layersPanel td>img{
+#layersPanel img{
+    clear:both;
+    display:block;
     padding: 0px 16px 0px;
     border-bottom: none!important;
 }
 
-table#layersPanel td label {
+#layersPanel span label {
     text-align: left;
     cursor: default;
     font-weight: bold;
@@ -159,7 +166,8 @@ table#layersPanel td label {
     white-space: nowrap;
     text-overflow: ellipsis;
     padding-right: 21px;
-    max-width: 210px;    
+    max-width: 210px;
+    width: 200px;
 }
 
 .clearfix{
@@ -167,7 +175,7 @@ table#layersPanel td label {
 }
 
 
-table#layersPanel td input[type=checkbox] {
+#layersPanel input[type=checkbox] {
     background: url(//ssl.gstatic.com/ui/v1/menu/checkmark.png) no-repeat -5px -3px!important;
     background-image: -webkit-image-set(url(//ssl.gstatic.com/ui/v1/menu/checkmark.png) 1x,url(//ssl.gstatic.com/ui/v1/menu/checkmark_2x.png) 2x)!important;
     height: 15px;
@@ -175,7 +183,7 @@ table#layersPanel td input[type=checkbox] {
     width: 15px;
     left: 0;
     position: relative;
-    top: 3px;
+    top: 15px;
     float: right;
     border: 1px solid #aaaaaa;
     border-radius: 0px;
@@ -228,8 +236,8 @@ input[type='checkbox']:checked:after {
 
 #mapInfoPanel {
     position: absolute;
-    top: 30px;
-    left: 30px;
+    top: 30px!important;
+    left: 30px!important;
     padding: 16px;
     width: 280px;
     border-bottom: 1px solid #e5e5e5;
@@ -242,7 +250,7 @@ input[type='checkbox']:checked:after {
 
 #layersPanel {
     position: absolute;
-    top: 132px!important;
+    top: 60px!important;
     left: 30px!important;
     padding: 16px;
     width: 280px!important;
@@ -251,6 +259,12 @@ input[type='checkbox']:checked:after {
     /* box-shadow: 0 2px 2px rgba(0,0,0,.05); */
     z-index: 770;
     background-color: #ffffff;
+    
+    display: block; /* important */
+    height: 70%;
+    overflow-y: scroll;
+    max-height: 70%;
+
     /* border-radius: 2px; */
 }
 

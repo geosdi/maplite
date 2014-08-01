@@ -31,6 +31,7 @@ import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.HTMLPanel;
+import java.util.logging.Level;
 import org.gwtopenmaps.openlayers.client.layer.OSM;
 import org.gwtopenmaps.openlayers.client.layer.OSMOptions;
 import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
@@ -65,9 +66,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     VerticalPanel mapInfoPanel;
 
     @UiField
-    VerticalPanel layersPanel;
-
-    Image image;
+    HTMLPanel layersPanel;
 
     WMS wmsLayer;
 
@@ -76,7 +75,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         mapInfoPanel.getElement().setId("mapInfoPanel");
         layersPanel.getElement().setId("layersPanel");
 
-//        layersPanel.setHeight("150px");
+//        layersPanel.getElement().setHeight("70%");
 //        layersPanel.setLayoutData();
 
 //        mapPanel.setSize("100%", "100%");
@@ -195,6 +194,8 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 wmsLayer = new WMS(layerName, raster.getDataSource(), wmsParams, wmsLayerParams);
                 wmsLayer.setIsBaseLayer(false);
 //                wmsLayer.setSingleTile(true);
+                logger.log(Level.INFO, "The layer: " + raster.getLayerName() + " is visible: " + raster.isChecked());
+                wmsLayer.setIsVisible(raster.isChecked());
                 map.addLayer(wmsLayer);
 
                 StringBuilder imageURL = new StringBuilder();
@@ -202,10 +203,11 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                         .append(layerName)
                         .append("&scale=" + map.getScale() + "&service=WMS");
 
-                image = new Image(imageURL.toString());
+                final Image legendImage = new Image(imageURL.toString());
+                legendImage.setVisible(raster.isChecked());
 
                 final CheckBox check = new CheckBox(layerName);
-                check.setValue(true);
+                check.setValue(raster.isChecked());
                 check.setTitle(layerName);
                 check.addClickHandler(new ClickHandler() {
 
@@ -214,22 +216,25 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                         CheckBox checkBox = (CheckBox) event.getSource();
 
                         manageLayerVisibility(checkBox.getValue(),
-                                layerName);
+                                layerName, legendImage);
                     }
                 });
 
                 layersPanel.add(check);
 //                layersPanel.add(new HTMLPanel("<div id='clearfix'/>"));
-                layersPanel.add(image);
+                layersPanel.add(legendImage);
             }
         }
     }
 
-    private void manageLayerVisibility(Boolean value, String layerName) {
+    private void manageLayerVisibility(Boolean value, String layerName, Image legendImage) {
         if (value) {
             map.getLayerByName(layerName).setIsVisible(true);
+//            legendImage.getElement().removeFromParent();
+            legendImage.setVisible(true);
         } else {
             map.getLayerByName(layerName).setIsVisible(false);
+            legendImage.setVisible(false);
         }
     }
 

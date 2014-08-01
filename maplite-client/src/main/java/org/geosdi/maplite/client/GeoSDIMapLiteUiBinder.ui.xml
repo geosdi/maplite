@@ -14,6 +14,12 @@
         </g:west> 
     </g:DockLayoutPanel>-->
     
+    <ui:style>
+        .layerHeight{
+            height: 80%;
+        }
+    </ui:style>
+    
     <g:LayoutPanel>
         <g:layer>
             <g:HTMLPanel ui:field="mapPanel"/>
@@ -22,9 +28,9 @@
             <g:VerticalPanel ui:field="mapInfoPanel"/>
         </g:layer>
         <g:layer>
-            <g:ScrollPanel>
-                <g:VerticalPanel ui:field="layersPanel"/>
-            </g:ScrollPanel>
+            <!--<g:ScrollPanel styleName='{style.layerHeight}'>-->
+                <g:HTMLPanel ui:field="layersPanel"/>
+            <!--</g:ScrollPanel>-->
         </g:layer>
     </g:LayoutPanel>
 

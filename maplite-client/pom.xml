@@ -17,7 +17,7 @@
     <packaging>war</packaging>
     <version>1.0-SNAPSHOT</version>
     
-    <name>GEOSDI :: == MapLite Web Application</name>
+    <name>GEOSDI :: == MapLite Web Client Application</name>
     
     
     <dependencies>
@@ -63,7 +63,7 @@
             <scope>provided</scope>
         </dependency>-->
         
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>com.github.gwtbootstrap</groupId>
             <artifactId>gwt-bootstrap</artifactId>
             <version>${gwt-bootstrap-version}</version>
@@ -133,11 +133,58 @@
     </dependencies>
 
 
+
     <build>
         <!-- Generate compiled stuff in the folder used for developing mode -->
         <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
-
+        
         <plugins>
+            
+            <!-- GWT Maven Plugin -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>gwt-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>compile</goal>
+                            <goal>test</goal>
+                            <!--<goal>i18n</goal>-->
+                            <goal>generateAsync</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <!-- Plugin configuration. There are many available options, see
+                gwt-maven-plugin documentation at codehaus.org -->
+                <configuration>
+                    <compileSourcesArtifacts>
+                        <compileSourcesArtifact>org.geosdi:maplite-model</compileSourcesArtifact>
+                        <compileSourcesArtifact>org.geosdi:maplite-client</compileSourcesArtifact>
+                    </compileSourcesArtifacts>
+                    <runTarget>geoSDIMapLite.html</runTarget>
+                    <hostedWebapp>${webappDirectory}</hostedWebapp>
+                    <!--<additionalSources>${webappDirectory}</additionalSources>-->
+                    <!--<additionalSources>src/main/java,target/generated-sources</additionalSources>-->
+                </configuration>
+            </plugin>
+            
+            <!-- Copy static web files before executing gwt:run -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.4</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>exploded</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <webappDirectory>${webappDirectory}</webappDirectory>
+                </configuration>
+            </plugin>
             
             <!-- Run the application using "mvn jetty:run" -->
             <plugin>
@@ -191,47 +238,48 @@
                     </connectors>
                 </configuration>
             </plugin>
-
-            <!-- GWT Maven Plugin -->
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>gwt-maven-plugin</artifactId>
-                <executions>
-                    <execution>
-                        <goals>
-                            <!--<goal>compile</goal>-->
-                            <goal>test</goal>
-                            <!--<goal>i18n</goal>-->
-                            <goal>generateAsync</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <!-- Plugin configuration. There are many available options, see
-                gwt-maven-plugin documentation at codehaus.org -->
-                <configuration>
-                    <runTarget>geoSDIMapLite.html</runTarget>
-                    <hostedWebapp>${webappDirectory}</hostedWebapp>
-                </configuration>
-            </plugin>
-
-            <!-- Copy static web files before executing gwt:run -->
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.4</version>
+                <artifactId>maven-antrun-plugin</artifactId>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <id>remove-build-files</id>
+                        <phase>package</phase>
+                        <configuration>
+                            <tasks>
+                                <delete dir="war/WEB-INF/lib" />
+                                <delete dir="war/WEB-INF/deploy" />
+                                <delete dir="gwt-unitCache" />
+                            </tasks>
+                        </configuration>
                         <goals>
-                            <goal>exploded</goal>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>clean-build-files</id>
+                        <phase>clean</phase>
+                        <configuration>
+                            <tasks>
+                                <delete dir="gwt-unitCache" />
+                            </tasks>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
                         </goals>
                     </execution>
                 </executions>
-                <configuration>
-                    <webappDirectory>${webappDirectory}</webappDirectory>
-                </configuration>
             </plugin>
             
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-eclipse-plugin</artifactId>
+                <version>2.9</version>
+                <configuration>
+                    <downloadSources>true</downloadSources>
+                </configuration>
+            </plugin>
             
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -242,6 +290,7 @@
                 <artifactId>maven-resources-plugin</artifactId>
             </plugin>
         </plugins>
+        <finalName>maplite</finalName>
 
         <!-- TODO: the resources stuff hardcodes paths to source + test directories, 
         we should be able to use some properties here -->

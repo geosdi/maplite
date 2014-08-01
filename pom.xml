@@ -48,11 +48,11 @@
     </developers>
 
     <repositories>
-        <repository>
+<!--        <repository>
             <id>gwt-bootstrap</id>
             <name>GWT-Bootstrap SNAPSHOTS</name>
             <url>http://gwtbootstrap.github.com/maven/snapshots</url>
-        </repository>
+        </repository>-->
         <repository>
             <id>geosdi</id>
             <name>geoSDI Repository</name>
