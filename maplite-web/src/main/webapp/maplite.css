@@ -135,10 +135,11 @@ h1 {
 table#mapInfoPanel td {
     padding: 0px 16px 0px;
     font-size: 1.6em;
-    overflow: hidden;
-    white-space: nowrap;
     text-overflow: ellipsis;
     padding: 0px 16px 0px;
+    width: 280px;
+    max-width: 280px;
+    height: 80px;
 }
 
 #layersPanel span{
@@ -239,7 +240,6 @@ input[type='checkbox']:checked:after {
     top: 30px!important;
     left: 30px!important;
     padding: 16px;
-    width: 280px;
     border-bottom: 1px solid #e5e5e5;
     -webkit-box-shadow: 0 2px 2px rgba(0,0,0,.05);
     box-shadow: 0 2px 2px rgba(0,0,0,.05);
@@ -250,7 +250,7 @@ input[type='checkbox']:checked:after {
 
 #layersPanel {
     position: absolute;
-    top: 60px!important;
+    top: 112px!important;
     left: 30px!important;
     padding: 16px;
     width: 280px!important;
