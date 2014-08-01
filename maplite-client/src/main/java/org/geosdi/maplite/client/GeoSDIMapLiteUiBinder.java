@@ -32,8 +32,10 @@ import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import java.util.logging.Level;
+import org.gwtopenmaps.openlayers.client.control.WMSGetFeatureInfo;
+import org.gwtopenmaps.openlayers.client.control.WMSGetFeatureInfoOptions;
+import org.gwtopenmaps.openlayers.client.event.GetFeatureInfoListener;
 import org.gwtopenmaps.openlayers.client.layer.OSM;
-import org.gwtopenmaps.openlayers.client.layer.OSMOptions;
 import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
 import org.gwtopenmaps.openlayers.client.layer.WMS;
 import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
@@ -77,7 +79,6 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
 //        layersPanel.getElement().setHeight("70%");
 //        layersPanel.setLayoutData();
-
 //        mapPanel.setSize("100%", "100%");
         mapPanel.add(initMap());
         mapPanel.getElement().setId("map");
@@ -98,7 +99,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         // Create a MapWidget and add a OSM layer using an url
         MapWidget mapWidget = new MapWidget("100%", "100%", defaultMapOptions);
         OSM osm = OSM.Mapnik("Mapnik");
-        
+
         osm.setIsBaseLayer(true);
         map = mapWidget.getMap();
         map.addLayer(osm);
@@ -174,7 +175,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 wmsLayerParams.setTileSize(new Size(256, 256));
                 wmsLayerParams.setTransitionEffect(TransitionEffect.RESIZE);
                 wmsLayerParams.setProjection("EPSG:3857");
-                
+
                 WMSParams wmsParams = new WMSParams();
                 wmsParams.setFormat("image/png");
                 wmsParams.setLayers(layerName);
@@ -184,7 +185,6 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                     wmsParams.setStyles("");
                 }
                 wmsParams.setTransparent(true);
-                
 
                 wmsLayer = new WMS(layerName, raster.getDataSource(), wmsParams, wmsLayerParams);
                 wmsLayer.setIsBaseLayer(false);
@@ -192,6 +192,30 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 logger.log(Level.INFO, "The layer: " + raster.getLayerName() + " is visible: " + raster.isChecked());
                 wmsLayer.setIsVisible(raster.isChecked());
                 wmsLayer.setSingleTile(true);
+                wmsLayer.setZIndex(raster.getzIndex());
+
+//                //Adds the WMSGetFeatureInfo control
+//                WMSGetFeatureInfoOptions wmsGetFeatureInfoOptions = new WMSGetFeatureInfoOptions();
+//                wmsGetFeatureInfoOptions.setMaxFeaturess(50);
+//                wmsGetFeatureInfoOptions.setLayer
+//                wmsGetFeatureInfoOptions.setDrillDown(true);
+//                //to request a GML string instead of HTML : wmsGetFeatureInfoOptions.setInfoFormat(GetFeatureInfoFormat.GML.toString());
+//
+//                WMSGetFeatureInfo wmsGetFeatureInfo = new WMSGetFeatureInfo(
+//                        wmsGetFeatureInfoOptions);
+//
+//                wmsGetFeatureInfo.addGetFeatureListener(new GetFeatureInfoListener() {
+//                    public void onGetFeatureInfo(GetFeatureInfoListener.GetFeatureInfoEvent eventObject) {
+//                        //if you did a wmsGetFeatureInfoOptions.setInfoFormat(GetFeatureInfoFormat.GML.toString()) you can do a VectorFeature[] features = eventObject.getFeatures(); here
+//                        DialogBoxWithCloseButton db = new DialogBoxWithCloseButton();
+//                        HTML html = new HTML(eventObject.getText());
+//                        db.setWidget(html);
+//                        db.center();
+//                    }
+//                });
+//                map.addControl(wmsGetFeatureInfo);
+//                wmsGetFeatureInfo.activate();
+
                 map.addLayer(wmsLayer);
 
                 StringBuilder imageURL = new StringBuilder();
