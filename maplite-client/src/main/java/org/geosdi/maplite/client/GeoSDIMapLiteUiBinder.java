@@ -97,14 +97,8 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
         // Create a MapWidget and add a OSM layer using an url
         MapWidget mapWidget = new MapWidget("100%", "100%", defaultMapOptions);
-        OSMOptions options = new OSMOptions();
-        options.setNumZoomLevels(19);
-        options.setProjection("EPSG:3857");
-        options.crossOriginFix(); // fixes pink tiles in FF
-        options.setAttribution("OpenStreetMap and contributors, under an open license. Humanitarian style byt Hot | geoSDI Maplite");
-        OSM osm = new OSM("Tiled Maps",
-                "http://a.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
-                options);
+        OSM osm = OSM.Mapnik("Mapnik");
+        
         osm.setIsBaseLayer(true);
         map = mapWidget.getMap();
         map.addLayer(osm);
@@ -180,7 +174,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 wmsLayerParams.setTileSize(new Size(256, 256));
                 wmsLayerParams.setTransitionEffect(TransitionEffect.RESIZE);
                 wmsLayerParams.setProjection("EPSG:3857");
-
+                
                 WMSParams wmsParams = new WMSParams();
                 wmsParams.setFormat("image/png");
                 wmsParams.setLayers(layerName);
