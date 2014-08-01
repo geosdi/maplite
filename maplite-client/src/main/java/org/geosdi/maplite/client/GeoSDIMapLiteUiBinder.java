@@ -101,9 +101,9 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         options.setNumZoomLevels(19);
         options.setProjection("EPSG:3857");
         options.crossOriginFix(); // fixes pink tiles in FF
-        options.setAttribution("geoSDI & WFP Lite Map");
+        options.setAttribution("OpenStreetMap and contributors, under an open license. Humanitarian style byt Hot | geoSDI Maplite");
         OSM osm = new OSM("Tiled Maps",
-                "http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png",
+                "http://a.tile.openstreetmap.fr/hot/${z}/${x}/${y}.png",
                 options);
         osm.setIsBaseLayer(true);
         map = mapWidget.getMap();
