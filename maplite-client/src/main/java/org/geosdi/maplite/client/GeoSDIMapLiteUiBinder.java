@@ -196,7 +196,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 imageURL.append(raster.getDataSource()).append(GET_LEGEND_REQUEST)
                         .append(layerName).append("&scale=").append(map.getScale())
                         .append("&service=WMS&style=")
-                        .append(raster.getStyles().get(0));
+                        .append(raster.getStyles().get(0).getStyleString());
 
                 final Image legendImage = new Image(imageURL.toString());
                 legendImage.setVisible(raster.isChecked());
