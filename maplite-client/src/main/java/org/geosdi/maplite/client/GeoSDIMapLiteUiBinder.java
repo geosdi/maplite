@@ -184,12 +184,14 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                     wmsParams.setStyles("");
                 }
                 wmsParams.setTransparent(true);
+                
 
                 wmsLayer = new WMS(layerName, raster.getDataSource(), wmsParams, wmsLayerParams);
                 wmsLayer.setIsBaseLayer(false);
 //                wmsLayer.setSingleTile(true);
                 logger.log(Level.INFO, "The layer: " + raster.getLayerName() + " is visible: " + raster.isChecked());
                 wmsLayer.setIsVisible(raster.isChecked());
+                wmsLayer.setSingleTile(true);
                 map.addLayer(wmsLayer);
 
                 StringBuilder imageURL = new StringBuilder();
