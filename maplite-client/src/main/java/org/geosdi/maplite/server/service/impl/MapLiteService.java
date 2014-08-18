@@ -227,7 +227,7 @@ public class MapLiteService implements IMapLiteService {
                         + "geoServerManager: " + nfe);
             }
         }
-        // layer.setzIndex(layerDTO.getPosition());
+        layer.setzIndex(layerDTO.getPosition());
     }
 
     private BBoxClientInfo convertBbox(GPBBox gpBbox) {

@@ -247,7 +247,13 @@ public abstract class GPLayerClientInfo implements Serializable,
      */
     @Override
     public int compareTo(IGPFolderElements o) {
-        return o.getzIndex() - getzIndex();
+        int result = 0;
+        if (o.getzIndex() > getzIndex()) {
+            result = 1;
+        } else if (o.getzIndex() < getzIndex()) {
+            result = -1;
+        }
+        return result;
     }
 
     /**

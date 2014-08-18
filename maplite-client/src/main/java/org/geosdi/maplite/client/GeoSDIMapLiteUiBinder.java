@@ -32,9 +32,6 @@ import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import java.util.logging.Level;
-import org.gwtopenmaps.openlayers.client.control.WMSGetFeatureInfo;
-import org.gwtopenmaps.openlayers.client.control.WMSGetFeatureInfoOptions;
-import org.gwtopenmaps.openlayers.client.event.GetFeatureInfoListener;
 import org.gwtopenmaps.openlayers.client.layer.OSM;
 import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
 import org.gwtopenmaps.openlayers.client.layer.WMS;
@@ -189,10 +186,12 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 wmsLayer = new WMS(layerName, raster.getDataSource(), wmsParams, wmsLayerParams);
                 wmsLayer.setIsBaseLayer(false);
 //                wmsLayer.setSingleTile(true);
-                logger.log(Level.INFO, "The layer: " + raster.getLayerName() + " is visible: " + raster.isChecked());
-                wmsLayer.setIsVisible(raster.isChecked());
                 wmsLayer.setSingleTile(true);
+                logger.log(Level.INFO, "The layer: " + raster.getLayerName() + " is visible: " + raster.isChecked());
                 wmsLayer.setZIndex(raster.getzIndex());
+//                wmsLayer.setZIndex(this.maxZIndex - raster.getzIndex() + 1);
+                logger.log(Level.INFO, "Z-Index value: " + wmsLayer.getZIndex());
+                wmsLayer.setIsVisible(raster.isChecked());
 
 //                //Adds the WMSGetFeatureInfo control
 //                WMSGetFeatureInfoOptions wmsGetFeatureInfoOptions = new WMSGetFeatureInfoOptions();
@@ -215,8 +214,8 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 //                });
 //                map.addControl(wmsGetFeatureInfo);
 //                wmsGetFeatureInfo.activate();
-
                 map.addLayer(wmsLayer);
+                map.setLayerZIndex(wmsLayer, raster.getzIndex());
 
                 StringBuilder imageURL = new StringBuilder();
                 imageURL.append(raster.getDataSource()).append(GET_LEGEND_REQUEST)
