@@ -76,6 +76,13 @@
         </dependency>
         
         <dependency>
+            <groupId>org.gwtopenmaps.openlayers</groupId>
+            <artifactId>gwt-openlayers-server</artifactId>
+            <version>${gwt-ol-version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        
+        <dependency>
             <groupId>org.geosdi</groupId>
             <artifactId>maplite-model</artifactId>
             <version>${project.version}</version>

@@ -45,6 +45,18 @@
         <url-pattern>/maplite/junithost/*</url-pattern> 
     </servlet-mapping>
     
+    <!-- Open proxy to circumvent cross-domain XmlHTTPRequest restrictions. -->
+    <servlet>
+        <servlet-name>GwtOpenlayersProxy</servlet-name>
+        <servlet-class>
+            org.gwtopenmaps.openlayers.server.GwtOpenLayersProxyServlet
+        </servlet-class>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>GwtOpenlayersProxy</servlet-name>
+        <url-pattern>/gwtOpenLayersProxy/*</url-pattern>
+    </servlet-mapping>
+    
     <!-- Default page to serve -->
     <welcome-file-list>
         <welcome-file>geoSDIMapLite.html</welcome-file>
