@@ -2,6 +2,7 @@ package org.geosdi.maplite.client;
 
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -91,6 +92,8 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     private int count = 0;
     private ScrollPanel getFeatureInfoScrollPanel;
     private VerticalPanel getFeatureInfoVerticalPanel;
+
+    private java.util.Map<String, VerticalPanel> legendPanels = Maps.<String, VerticalPanel>newHashMap();
 
     public GeoSDIMapLiteUiBinder() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -215,7 +218,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     private void addResourcesToTheMap(GPClientProject clientProject) {
         if (clientProject != null) {
             for (GPFolderClientInfo folder : GPSharedUtils.safeList(clientProject.getRootFolders())) {
-                this.addFolderElementsToTheMap(folder.getFolderElements());
+                this.addFolderElementsToTheMap(Lists.<IGPFolderElements>newArrayList(folder));
             }
         }
     }
@@ -223,8 +226,26 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     private void addFolderElementsToTheMap(List<IGPFolderElements> folderElements) {
         logger.finest("**** addFolderElementsToheMap: " + folderElements.toString());
         for (IGPFolderElements folderElement : GPSharedUtils.safeList(folderElements)) {
+            logger.finest(folderElement.toString());
             if (folderElement instanceof GPFolderClientInfo) {
-                this.addFolderElementsToTheMap(((GPFolderClientInfo) folderElement).getFolderElements());
+                final GPFolderClientInfo folderInfo = (GPFolderClientInfo) folderElement;
+                if (GPSharedUtils.isNotEmpty(folderInfo.getFolderElements())) {
+                    final CheckBox check = new CheckBox(folderInfo.getLabel());
+                    VerticalPanel folderPanel = new VerticalPanel();
+                    legendPanels.put(folderInfo.getLabel(), folderPanel);
+                    check.setValue(folderInfo.isChecked());
+                    check.setTitle(folderInfo.getLabel());
+                    check.addClickHandler(new ClickHandler() {
+
+                        @Override
+                        public void onClick(ClickEvent event) {
+                            CheckBox checkBox = (CheckBox) event.getSource();
+                            manageLayerVisibility(checkBox.getValue(), folderInfo);
+                        }
+                    });
+                    layersPanel.add(check);
+                    this.addFolderElementsToTheMap(((GPFolderClientInfo) folderElement).getFolderElements());
+                }
             } else if (folderElement instanceof ClientRasterInfo) {
                 ClientRasterInfo raster = (ClientRasterInfo) folderElement;
                 final String layerName = new String(raster.getLayerName());
@@ -287,21 +308,6 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 final Image legendImage = new Image(imageURL.toString());
                 legendImage.setVisible(raster.isChecked());
 
-                final CheckBox check = new CheckBox(layerName);
-                check.setValue(raster.isChecked());
-                check.setTitle(layerName);
-                check.addClickHandler(new ClickHandler() {
-
-                    @Override
-                    public void onClick(ClickEvent event) {
-                        CheckBox checkBox = (CheckBox) event.getSource();
-
-                        manageLayerVisibility(checkBox.getValue(),
-                                layerName, legendImage);
-                    }
-                });
-
-                layersPanel.add(check);
 //                layersPanel.add(new HTMLPanel("<div id='clearfix'/>"));
                 layersPanel.add(legendImage);
             }
@@ -329,14 +335,17 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         return result;
     }
 
-    private void manageLayerVisibility(Boolean value, String layerName, Image legendImage) {
-        if (value) {
-            map.getLayerByName(layerName).setIsVisible(true);
-//            legendImage.getElement().removeFromParent();
-            legendImage.setVisible(true);
+    private void manageLayerVisibility(Boolean value, IGPFolderElements folderElement) {
+        if (folderElement instanceof GPFolderClientInfo) {
+            GPFolderClientInfo folderObj = (GPFolderClientInfo) folderElement;
+            VerticalPanel legendPanel = this.legendPanels.get(folderObj.getLabel());
+            legendPanel.setVisible(value);
+            for (IGPFolderElements innerElement : GPSharedUtils.safeList(folderObj.getFolderElements())) {
+                this.manageLayerVisibility(value, innerElement);
+            }
         } else {
-            map.getLayerByName(layerName).setIsVisible(false);
-            legendImage.setVisible(false);
+            String layerName = ((ClientRasterInfo) folderElement).getLayerName();
+            map.getLayerByName(layerName).setIsVisible(value);
         }
     }
 
