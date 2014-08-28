@@ -2,7 +2,7 @@
 
 /** Example rules used by the template application (remove for your app) */
 
-@import url(http://reset5.googlecode.com/hg/reset.min.css);
+@import url(https://reset5.googlecode.com/hg/reset.min.css);
 
 h1 {
     font-size: 2em;

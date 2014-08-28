@@ -29,7 +29,9 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
+import org.geosdi.maplite.client.model.BaseLayerBuilder;
 import org.geosdi.maplite.client.model.FeatureInfoControlFactory;
+import org.geosdi.maplite.client.model.LegendBuilder;
 import org.geosdi.maplite.client.service.MapLiteServiceRemote;
 import org.geosdi.maplite.shared.ClientRasterInfo;
 import org.geosdi.maplite.shared.GPClientProject;
@@ -45,7 +47,8 @@ import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import org.gwtopenmaps.openlayers.client.control.WMSGetFeatureInfo;
 import org.gwtopenmaps.openlayers.client.event.GetFeatureInfoListener;
-import org.gwtopenmaps.openlayers.client.layer.OSM;
+import org.gwtopenmaps.openlayers.client.event.MapZoomListener;
+import org.gwtopenmaps.openlayers.client.layer.Layer;
 import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
 import org.gwtopenmaps.openlayers.client.layer.WMS;
 import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
@@ -60,9 +63,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     private final static Logger logger = Logger.getLogger("");
 
     private final static Projection DEFAULT_PROJECTION = new Projection("EPSG:4326");
-
-    protected static final String GET_LEGEND_REQUEST = "?REQUEST=GetLegendGraphic"
-            + "&VERSION=1.0.0&FORMAT=image/png&LAYER=";
+    private final static int NUM_ZOOM_LEVEL = 30;
 
     private Map map;
 
@@ -97,7 +98,9 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
     private final java.util.Map<GPFolderClientInfo, VerticalPanel> legendPanels
             = Maps.<GPFolderClientInfo, VerticalPanel>newHashMap();
-    private VerticalPanel folderPanel;
+    //Temporary working items
+    private VerticalPanel tmpPanel;
+    private GPFolderClientInfo tmpFolder;
 
     public GeoSDIMapLiteUiBinder() {
         initWidget(ourUiBinder.createAndBindUi(this));
@@ -133,18 +136,21 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         String x = Window.Location.getParameter("x");
         String y = Window.Location.getParameter("y");
         String zoom = Window.Location.getParameter("zoom");
+        String baseMap = Window.Location.getParameter("baseMap");
 
         MapOptions defaultMapOptions = new MapOptions();
-        defaultMapOptions.setNumZoomLevels(19);
-        defaultMapOptions.setDisplayProjection(new Projection("EPSG:4326"));
-
-        // Create a MapWidget and add a OSM layer using an url
+        defaultMapOptions.setNumZoomLevels(NUM_ZOOM_LEVEL);
+        defaultMapOptions.setDisplayProjection(DEFAULT_PROJECTION);
         MapWidget mapWidget = new MapWidget("100%", "100%", defaultMapOptions);
-        OSM osm = OSM.Mapnik("Mapnik");
-
-        osm.setIsBaseLayer(true);
         map = mapWidget.getMap();
-        map.addLayer(osm);
+        map.addLayer(BaseLayerBuilder.buildBaseMap((baseMap)));
+        map.addMapZoomListener(new MapZoomListener() {
+
+            @Override
+            public void onMapZoom(MapZoomListener.MapZoomEvent eventObject) {
+                LegendBuilder.rebuildLegend(legendPanels, map);
+            }
+        });
 
         if (!Strings.isNullOrEmpty(mapID)) {
             mapID = URL.decode(mapID);
@@ -217,31 +223,32 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
     private void addFolderElementsToTheMap(List<IGPFolderElements> folderElements) {
         logger.finest("**** addFolderElementsToheMap: " + folderElements.toString());
-        for (IGPFolderElements folderElement : GPSharedUtils.safeList(folderElements)) {
+        for (final IGPFolderElements folderElement : GPSharedUtils.safeList(folderElements)) {
             logger.finest(folderElement.toString());
             if (folderElement instanceof GPFolderClientInfo) {
-                final GPFolderClientInfo folderInfo = (GPFolderClientInfo) folderElement;
-                if (GPSharedUtils.isNotEmpty(folderInfo.getFolderElements())) {
-                    final CheckBox check = new CheckBox(folderInfo.getLabel());
-                    folderPanel = new VerticalPanel();
-                    legendPanels.put(folderInfo, folderPanel);
-                    check.setValue(folderInfo.isChecked());
-                    check.setTitle(folderInfo.getLabel());
+                this.tmpFolder = (GPFolderClientInfo) folderElement;
+                if (GPSharedUtils.isNotEmpty(tmpFolder.getFolderElements())) {
+                    final CheckBox check = new CheckBox(tmpFolder.getLabel());
+                    tmpPanel = new VerticalPanel();
+                    legendPanels.put((GPFolderClientInfo) folderElement, tmpPanel);
+                    check.setValue(tmpFolder.isChecked());
+                    check.setTitle(tmpFolder.getLabel());
                     check.addClickHandler(new ClickHandler() {
 
                         @Override
                         public void onClick(ClickEvent event) {
                             CheckBox checkBox = (CheckBox) event.getSource();
-                            manageLayerVisibility(checkBox.getValue(), folderInfo);
+                            ((GPFolderClientInfo) folderElement).setChecked(checkBox.getValue());
+                            manageLayerVisibility(checkBox.getValue(), (GPFolderClientInfo) folderElement);
                         }
                     });
                     layersPanel.add(check);
-                    layersPanel.add(folderPanel);
+                    layersPanel.add(tmpPanel);
                     this.addFolderElementsToTheMap(((GPFolderClientInfo) folderElement).getFolderElements());
                 }
             } else if (folderElement instanceof ClientRasterInfo) {
                 ClientRasterInfo raster = (ClientRasterInfo) folderElement;
-                final String layerName = new String(raster.getLayerName());
+                final String layerName = raster.getLayerName();
                 WMSOptions wmsLayerParams = new WMSOptions();
                 wmsLayerParams.setTileSize(new Size(256, 256));
                 wmsLayerParams.setTransitionEffect(TransitionEffect.RESIZE);
@@ -250,11 +257,12 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 WMSParams wmsParams = new WMSParams();
                 wmsParams.setFormat("image/png");
                 wmsParams.setLayers(layerName);
-                if (raster.getStyles() != null && !raster.getStyles().isEmpty()) {
+                if (GPSharedUtils.isNotEmpty(raster.getStyles())) {
                     wmsParams.setStyles(raster.getStyles().get(0).getStyleString());
                 } else {
                     wmsParams.setStyles("");
                 }
+                logger.info("Style for layer: " + layerName + " - style: " + wmsParams.getStyles());
                 wmsParams.setTransparent(true);
 
                 wmsLayer = new WMS(layerName, raster.getDataSource(), wmsParams, wmsLayerParams);
@@ -264,7 +272,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 logger.log(Level.INFO, "The layer: " + raster.getLayerName() + " is visible: " + raster.isChecked());
                 wmsLayer.setZIndex(raster.getzIndex());
                 logger.log(Level.INFO, "Z-Index value: " + wmsLayer.getZIndex());
-                wmsLayer.setIsVisible(raster.isChecked());
+                wmsLayer.setIsVisible(tmpFolder.isChecked() ? raster.isChecked() : false);
 
                 WMSGetFeatureInfo wmsGetFeatureInfo = FeatureInfoControlFactory.createControl(wmsLayer);
                 wmsGetFeatureInfo.addGetFeatureListener(new GetFeatureInfoListener() {
@@ -306,15 +314,9 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 map.addLayer(wmsLayer);
                 map.setLayerZIndex(wmsLayer, raster.getzIndex());
 
-                StringBuilder imageURL = new StringBuilder();
-                imageURL.append(raster.getDataSource()).append(GET_LEGEND_REQUEST)
-                        .append(layerName).append("&scale=").append(map.getScale())
-                        .append("&service=WMS&style=")
-                        .append(raster.getStyles().size() > 0 ? raster.getStyles().get(0).getStyleString() : "");
-
-                final Image legendImage = new Image(imageURL.toString());
-                legendImage.setVisible(raster.isChecked());
-                folderPanel.add(legendImage);
+                Image legendImage = LegendBuilder.generateLegendImage(raster, map,
+                        tmpFolder.isChecked() ? raster.isChecked() : false);
+                tmpPanel.add(legendImage);
             }
         }
     }
@@ -348,10 +350,21 @@ public class GeoSDIMapLiteUiBinder extends Composite {
             for (IGPFolderElements innerElement : GPSharedUtils.safeList(folderObj.getFolderElements())) {
                 this.manageLayerVisibility(visible, innerElement);
             }
+            if (visible) {
+                LegendBuilder.rebuildLegend(folderObj, legendPanel, map);
+            }
         } else {
-            String layerName = ((ClientRasterInfo) folderElement).getLayerName();
-            map.getLayerByName(layerName).setIsVisible(visible == false ? false :
-                    ((ClientRasterInfo) folderElement).isChecked());
+            ClientRasterInfo raster = (ClientRasterInfo) folderElement;
+            String layerName = raster.getLayerName();
+            Layer[] layers = map.getLayersByName(layerName);
+            if (layers != null) {
+                for (Layer layer : layers) {
+                    if (layer.getName().equalsIgnoreCase(layerName)) {
+                        layer.setIsVisible(visible ? raster.isChecked() : false);
+                        break;
+                    }
+                }
+            }
         }
     }
 
