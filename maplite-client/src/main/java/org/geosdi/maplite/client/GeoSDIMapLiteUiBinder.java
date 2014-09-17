@@ -267,7 +267,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
                 wmsLayer = new WMS(layerName, raster.getDataSource(), wmsParams, wmsLayerParams);
                 wmsLayer.setIsBaseLayer(Boolean.FALSE);
-                wmsLayer.setSingleTile(Boolean.FALSE);
+                wmsLayer.setSingleTile(raster.isSingleTileRequest());
                 wmsLayer.setOpacity(raster.getOpacity());
                 logger.log(Level.INFO, "The layer: " + raster.getLayerName() + " is visible: " + raster.isChecked());
                 wmsLayer.setZIndex(raster.getzIndex());

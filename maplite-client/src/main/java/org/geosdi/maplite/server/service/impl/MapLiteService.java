@@ -48,6 +48,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.geosdi.geoplatform.core.model.GPBBox;
 import org.geosdi.geoplatform.exception.ResourceNotFoundFault;
 import org.geosdi.geoplatform.gui.shared.GPLayerType;
+import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
 import org.geosdi.geoplatform.responce.FolderDTO;
 import org.geosdi.geoplatform.responce.IElementDTO;
 import org.geosdi.geoplatform.responce.ProjectDTO;
@@ -159,9 +160,10 @@ public class MapLiteService implements IMapLiteService {
         raster.setOpacity(rasterDTO.getOpacity());
         raster.setMaxScale(rasterDTO.getMaxScale());
         raster.setMinScale(rasterDTO.getMinScale());
+        raster.setSingleTileRequest(rasterDTO.isSingleTileRequest());
         ArrayList<GPStyleStringBeanModel> styles = Lists.<GPStyleStringBeanModel>newArrayList();
         GPStyleStringBeanModel style;
-        for (String styleString : rasterDTO.getStyleList()) {
+        for (String styleString : GPSharedUtils.safeList(rasterDTO.getStyleList())) {
             style = new GPStyleStringBeanModel();
             style.setStyleString(styleString);
             styles.add(style);
@@ -182,6 +184,7 @@ public class MapLiteService implements IMapLiteService {
         layer.setTitle(layerDTO.getTitle());
         layer.setAlias(layerDTO.getAlias());
         layer.setCqlFilter(layerDTO.getCqlFilter());
+        layer.setSingleTileRequest(layerDTO.isSingleTileRequest());
         if ((layerDTO.getTimeFilter() != null) && !(layerDTO.getTimeFilter().equals(
                 ""))) {
             layer.setTimeFilter(layerDTO.getTimeFilter());
