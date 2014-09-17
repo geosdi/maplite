@@ -31,6 +31,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
 import org.geosdi.maplite.client.model.BaseLayerBuilder;
+import org.geosdi.maplite.client.model.CoordinateReferenceSystem;
 import org.geosdi.maplite.client.model.FeatureInfoControlFactory;
 import org.geosdi.maplite.client.model.LegendBuilder;
 import org.geosdi.maplite.client.service.MapLiteServiceRemote;
@@ -63,8 +64,6 @@ import org.gwtopenmaps.openlayers.client.layer.WMSParams;
 public class GeoSDIMapLiteUiBinder extends Composite {
 
     private final static Logger logger = Logger.getLogger("");
-
-    private final static Projection DEFAULT_PROJECTION = new Projection("EPSG:4326");
     private final static int NUM_ZOOM_LEVEL = 31;
 
     private Map map;
@@ -148,14 +147,13 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         String x = Window.Location.getParameter("x");
         String y = Window.Location.getParameter("y");
         String zoom = Window.Location.getParameter("zoom");
-        String baseMap = Window.Location.getParameter("baseMap");
+        final String baseMap = Window.Location.getParameter("baseMap");
 
         MapOptions defaultMapOptions = new MapOptions();
         defaultMapOptions.setNumZoomLevels(NUM_ZOOM_LEVEL);
-        defaultMapOptions.setDisplayProjection(DEFAULT_PROJECTION);
+        defaultMapOptions.setDisplayProjection(new Projection(CoordinateReferenceSystem.WGS_84.getCode()));
         MapWidget mapWidget = new MapWidget("100%", "100%", defaultMapOptions);
         map = mapWidget.getMap();
-        map.addLayer(BaseLayerBuilder.buildBaseMap((baseMap)));
         map.addMapZoomListener(new MapZoomListener() {
 
             @Override
@@ -163,6 +161,25 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 LegendBuilder.rebuildLegend(legendPanels, map);
             }
         });
+
+        // Lets add some default controls to the map
+        map.addControl(new ScaleLine()); // Display the scaleline
+        map.addControl(new MousePosition());
+
+        double lon = 16.17582;
+        double lat = 42.76989;
+        int calculateZoomLevel = 5;
+        if (!Strings.isNullOrEmpty(x) && !Strings.isNullOrEmpty(y)
+                && !Strings.isNullOrEmpty(zoom)) {
+
+            lon = Double.parseDouble(x);
+            lat = Double.parseDouble(y);
+            calculateZoomLevel = Integer.parseInt(zoom);
+            // Center and zoom to a location
+            // system
+        }
+        final int zoomLevel = calculateZoomLevel;
+        final LonLat lonLat = new LonLat(lon, lat);
 
         if (!Strings.isNullOrEmpty(mapID)) {
             mapID = URL.decode(mapID);
@@ -178,38 +195,31 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                             @Override
                             public void onFailure(Throwable caught) {
                                 logger.warning("Error loading project from stack: " + caught);
+                                map.addLayer(BaseLayerBuilder.buildBaseMap((baseMap)));
+                                lonLat.transform(CoordinateReferenceSystem.WGS_84.getCode(),
+                                        map.getProjection()); // transform lonlat to OSM coordinate
+                                map.setCenter(lonLat, zoomLevel);
                             }
 
                             @Override
                             public void onSuccess(GPClientProject result) {
                                 logger.finest("Loaded project from stack: " + result.toString());
                                 mapInfoPanel.add(new HTML("<span><h4>#" + result.getName() + "</h4></span>"));
+                                Layer baseLayer;
+                                if (GPSharedUtils.isNotEmpty(baseMap)) {
+                                    baseLayer = BaseLayerBuilder.buildBaseMap((baseMap));
+                                } else {
+                                    baseLayer = BaseLayerBuilder.buildBaseMap((result.getBaseLayer()));
+                                }
+                                map.addLayer(baseLayer);
+                                lonLat.transform(CoordinateReferenceSystem.WGS_84.getCode(),
+                                        map.getProjection()); // transform lonlat to OSM coordinate
+                                map.setCenter(lonLat, zoomLevel);
                                 addResourcesToTheMap(result);
                             }
                         });
             }
         }
-
-        // Lets add some default controls to the map
-        map.addControl(new ScaleLine()); // Display the scaleline
-        map.addControl(new MousePosition());
-
-        double lon = 16.17582;
-        double lat = 42.76989;
-        int zommLevel = 5;
-        if (!Strings.isNullOrEmpty(x) && !Strings.isNullOrEmpty(y)
-                && !Strings.isNullOrEmpty(zoom)) {
-
-            lon = Double.parseDouble(x);
-            lat = Double.parseDouble(y);
-            zommLevel = Integer.parseInt(zoom);
-            // Center and zoom to a location
-            // system
-        }
-        LonLat lonLat = new LonLat(lon, lat);
-        lonLat.transform(DEFAULT_PROJECTION.getProjectionCode(),
-                map.getProjection()); // transform lonlat to OSM coordinate
-        map.setCenter(lonLat, zommLevel);
 
         return mapWidget;
     }

@@ -57,7 +57,6 @@ import org.gwtopenmaps.openlayers.client.protocol.ProtocolType;
  */
 public enum BaseLayerEnum {
 
-    //baseLayerMap.get(enumLayer).createBaseLayer()
     OPEN_STREET_MAP(new IBaseLayerCreator() {
 
         @Override

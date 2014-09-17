@@ -45,6 +45,7 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
+import org.geosdi.geoplatform.core.model.GPAccountProject;
 import org.geosdi.geoplatform.core.model.GPBBox;
 import org.geosdi.geoplatform.exception.ResourceNotFoundFault;
 import org.geosdi.geoplatform.gui.shared.GPLayerType;
@@ -95,7 +96,7 @@ public class MapLiteService implements IMapLiteService {
         this.geoPlatformServiceClient = geoPlatformServiceClient;
     }
 
-    public GPClientProject convertToGPClientProject(ProjectDTO projectDTO) {
+    public GPClientProject convertToGPClientProject(ProjectDTO projectDTO, String baseLayer) {
         GPClientProject clientProject = new GPClientProject();
         clientProject.setId(projectDTO.getId());
         clientProject.setName(projectDTO.getName());
@@ -105,6 +106,7 @@ public class MapLiteService implements IMapLiteService {
         }
         clientProject.setRootFolders(this.convertOnlyFolders(
                 projectDTO.getRootFolders()));
+        clientProject.setBaseLayer(baseLayer);
         return clientProject;
     }
 
@@ -249,14 +251,16 @@ public class MapLiteService implements IMapLiteService {
             HttpServletRequest request) throws MapLiteException {
         logger.debug("Executing Load Project");
         ProjectDTO projectDTO = null;
+        GPAccountProject accountProject = null;
         try {
             projectDTO = this.geoPlatformServiceClient.
                     getProjectWithExpandedFolders(projectId, accountId);
+            accountProject = this.geoPlatformServiceClient.getDefaultAccountProject(accountId);
         } catch (ResourceNotFoundFault rnf) {
             logger.error("Returning no elements: " + rnf);
             throw new MapLiteException("Unable to find the requested projct: " + rnf);
         }
-        return this.convertToGPClientProject(projectDTO);
+        return this.convertToGPClientProject(projectDTO, accountProject.getBaseLayer());
     }
 
 }

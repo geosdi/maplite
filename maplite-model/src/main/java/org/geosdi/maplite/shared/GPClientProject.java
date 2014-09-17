@@ -25,6 +25,16 @@ public class GPClientProject implements Serializable {
     private String message;
 //    private IGPUserSimpleDetail owner;
     private List<GPFolderClientInfo> rootFolders;
+    //Addendum
+    private String baseLayer;
+
+    public String getBaseLayer() {
+        return baseLayer;
+    }
+
+    public void setBaseLayer(String baseLayer) {
+        this.baseLayer = baseLayer;
+    }
 
     /**
      * @return the id
