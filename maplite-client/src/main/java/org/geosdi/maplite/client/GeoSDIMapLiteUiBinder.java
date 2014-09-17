@@ -15,6 +15,7 @@ import com.google.gwt.uibinder.client.UiField;
 import com.google.gwt.user.client.Command;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
@@ -45,6 +46,7 @@ import org.gwtopenmaps.openlayers.client.OpenLayers;
 import org.gwtopenmaps.openlayers.client.Projection;
 import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
+import org.gwtopenmaps.openlayers.client.control.ScaleLine;
 import org.gwtopenmaps.openlayers.client.control.WMSGetFeatureInfo;
 import org.gwtopenmaps.openlayers.client.event.GetFeatureInfoListener;
 import org.gwtopenmaps.openlayers.client.event.MapZoomListener;
@@ -63,7 +65,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
     private final static Logger logger = Logger.getLogger("");
 
     private final static Projection DEFAULT_PROJECTION = new Projection("EPSG:4326");
-    private final static int NUM_ZOOM_LEVEL = 30;
+    private final static int NUM_ZOOM_LEVEL = 31;
 
     private Map map;
 
@@ -126,8 +128,18 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         this.getFeatureInfoScrollPanel = new ScrollPanel();
         this.getFeatureInfoScrollPanel.setSize("400px", "250px");
         this.getFeatureInfoScrollPanel.addStyleName("getFeatureInfoBackgroud");
+        Button btnClose = new Button("Close");
+        btnClose.addClickHandler(new ClickHandler() {
+            @Override
+            public void onClick(ClickEvent event) {
+                getFeatureInfoPanel.hide();
+            }
+        });
         this.getFeatureInfoScrollPanel.add(this.getFeatureInfoVerticalPanel);
-        this.getFeatureInfoPanel.add(this.getFeatureInfoScrollPanel);
+        VerticalPanel vp = new VerticalPanel();
+        vp.add(btnClose);
+        vp.add(getFeatureInfoScrollPanel);
+        this.getFeatureInfoPanel.add(vp);
     }
 
     private MapWidget initMap() {
@@ -179,7 +191,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         }
 
         // Lets add some default controls to the map
-//        map.addControl(new ScaleLine()); // Display the scaleline
+        map.addControl(new ScaleLine()); // Display the scaleline
         map.addControl(new MousePosition());
 
         double lon = 16.17582;
