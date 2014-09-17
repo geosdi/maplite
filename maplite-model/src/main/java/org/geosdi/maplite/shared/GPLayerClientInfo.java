@@ -60,6 +60,7 @@ public abstract class GPLayerClientInfo implements Serializable,
     private String timeFilter;
     private String variableTimeFilter;
     private boolean checked;
+    private boolean singleTileRequest;
 
     /**
      * @return the id
@@ -240,6 +241,14 @@ public abstract class GPLayerClientInfo implements Serializable,
         this.variableTimeFilter = variableTimeFilter;
     }
 
+    public boolean isSingleTileRequest() {
+        return singleTileRequest;
+    }
+
+    public void setSingleTileRequest(boolean singleTileRequest) {
+        this.singleTileRequest = singleTileRequest;
+    }
+
     /**
      * (non-Javadoc)
      *
@@ -267,6 +276,9 @@ public abstract class GPLayerClientInfo implements Serializable,
                 + ", alias=" + alias + ", title=" + title + ", abstractText="
                 + abstractText + ", dataSource=" + dataSource + ", crs=" + crs
                 + ", bbox=" + bbox + ", layerType=" + layerType + ", zIndex="
-                + zIndex + ", cqlFilter=" + cqlFilter + ", checked=" + checked + '}';
+                + zIndex + ", cqlFilter=" + cqlFilter + ", timeFilter=" + timeFilter
+                + ", variableTimeFilter=" + variableTimeFilter + ", checked="
+                + checked + ", singleTileRequest=" + singleTileRequest + '}';
     }
+
 }
