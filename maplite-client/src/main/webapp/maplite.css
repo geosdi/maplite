@@ -4,6 +4,13 @@
 
 @import url(https://reset5.googlecode.com/hg/reset.min.css);
 
+#share42 {
+    top: 5px;
+    right: 5px;
+    position: absolute;
+    z-index: 1000;
+}
+
 h1 {
     font-size: 2em;
     font-weight: bold;
@@ -254,8 +261,8 @@ input[type='checkbox']:checked:after {
     box-shadow: 0 2px 2px rgba(0,0,0,.05);
     /*z-index: 750;*/
     z-index: 20;
-/*    width: 280px;
-    max-width: 280px;*/
+    /*    width: 280px;
+        max-width: 280px;*/
     height: 80px;
     background-color: #ffffff;
     border-radius: 2px;

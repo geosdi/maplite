@@ -34,6 +34,7 @@ import org.geosdi.maplite.client.model.BaseLayerBuilder;
 import org.geosdi.maplite.client.model.CoordinateReferenceSystem;
 import org.geosdi.maplite.client.model.FeatureInfoControlFactory;
 import org.geosdi.maplite.client.model.LegendBuilder;
+import org.geosdi.maplite.client.model.MapLiteUrlRewriter;
 import org.geosdi.maplite.client.service.MapLiteServiceRemote;
 import org.geosdi.maplite.shared.ClientRasterInfo;
 import org.geosdi.maplite.shared.GPClientProject;
@@ -50,6 +51,7 @@ import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import org.gwtopenmaps.openlayers.client.control.ScaleLine;
 import org.gwtopenmaps.openlayers.client.control.WMSGetFeatureInfo;
 import org.gwtopenmaps.openlayers.client.event.GetFeatureInfoListener;
+import org.gwtopenmaps.openlayers.client.event.MapMoveEndListener;
 import org.gwtopenmaps.openlayers.client.event.MapZoomListener;
 import org.gwtopenmaps.openlayers.client.layer.Layer;
 import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
@@ -154,10 +156,23 @@ public class GeoSDIMapLiteUiBinder extends Composite {
         defaultMapOptions.setDisplayProjection(new Projection(CoordinateReferenceSystem.WGS_84.getCode()));
         MapWidget mapWidget = new MapWidget("100%", "100%", defaultMapOptions);
         map = mapWidget.getMap();
+        map.addMapMoveEndListener(new MapMoveEndListener() {
+
+            @Override
+            public void onMapMoveEnd(MapMoveEndListener.MapMoveEndEvent eventObject) {
+                Map map = eventObject.getSource();
+                LonLat lonLat = map.getCenter();
+                lonLat.transform(map.getProjection(), CoordinateReferenceSystem.WGS_84.getCode());
+                MapLiteUrlRewriter.rewriteParameterURL("x", "" + lonLat.lon());
+                MapLiteUrlRewriter.rewriteParameterURL("y", "" + lonLat.lat());
+            }
+        });
         map.addMapZoomListener(new MapZoomListener() {
 
             @Override
             public void onMapZoom(MapZoomListener.MapZoomEvent eventObject) {
+                Map map = eventObject.getSource();
+                MapLiteUrlRewriter.rewriteParameterURL("zoom", "" + map.getZoom());
                 LegendBuilder.rebuildLegend(legendPanels, map);
             }
         });
