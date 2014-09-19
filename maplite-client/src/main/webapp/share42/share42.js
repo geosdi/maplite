@@ -3,7 +3,10 @@
  * Per far funzionare le script bisogna dichiarare il nume della funzione ed 
  * alla fine associare all'evento window.onload la funzione dichiarata, inoltre,
  * bisogna dichiarae u = encodeURIComponent(window.location.href);
- * 
+ * Inoltre, rimuovere:
+ * '"http://www.feedburner.com/fb/a/emailFlare?loc=en_US&itemTitle=' + t + '&uri=' + u + '" title="Email this to a friend"');
+ * e sostituirlo con
+ * '"#" onclick="window.open(\'mailto:?subject=MapLite sharing Link&body=' + u + '\', \'_blank\', \'scrollbars=0, resizable=1, menubar=0, left=100, top=100, width=550, height=400, toolbar=0, status=0\');return false" title="Send email"');
  * */
 function share42() {
     var e = document.getElementsByTagName('div');
@@ -68,7 +71,7 @@ function share42() {
             var fbQuery = 'u=' + u;
             if (i != 'null' && i != '')
                 fbQuery = 's=100&p[url]=' + u + '&p[title]=' + t + '&p[summary]=' + d + '&p[images][0]=' + i;
-            var s = new Array('"https://www.evernote.com/clip.action?url=' + u + '&title=' + t + '" title="Share on Evernote"', '"#" data-count="fb" onclick="window.open(\'http://www.facebook.com/sharer.php?m2w&' + fbQuery + '\', \'_blank\', \'scrollbars=0, resizable=1, menubar=0, left=100, top=100, width=550, height=440, toolbar=0, status=0\');return false" title="Share on Facebook"', '"#" data-count="gplus" onclick="window.open(\'https://plus.google.com/share?url=' + u + '\', \'_blank\', \'scrollbars=0, resizable=1, menubar=0, left=100, top=100, width=550, height=440, toolbar=0, status=0\');return false" title="Share on Google+"', '"#" data-count="twi" onclick="window.open(\'https://twitter.com/intent/tweet?text=' + t + '&url=' + u + '\', \'_blank\', \'scrollbars=0, resizable=1, menubar=0, left=100, top=100, width=550, height=440, toolbar=0, status=0\');return false" title="Share on Twitter"');
+            var s = new Array('"https://www.evernote.com/clip.action?url=' + u + '&title=' + t + '" title="Share on Evernote"', '"#" data-count="fb" onclick="window.open(\'http://www.facebook.com/sharer.php?m2w&' + fbQuery + '\', \'_blank\', \'scrollbars=0, resizable=1, menubar=0, left=100, top=100, width=550, height=440, toolbar=0, status=0\');return false" title="Share on Facebook"', '"#" data-count="gplus" onclick="window.open(\'https://plus.google.com/share?url=' + u + '\', \'_blank\', \'scrollbars=0, resizable=1, menubar=0, left=100, top=100, width=550, height=440, toolbar=0, status=0\');return false" title="Share on Google+"', '"#" data-count="twi" onclick="window.open(\'https://twitter.com/intent/tweet?text=' + t + '&url=' + u + '\', \'_blank\', \'scrollbars=0, resizable=1, menubar=0, left=100, top=100, width=550, height=440, toolbar=0, status=0\');return false" title="Share on Twitter"',  '"#" onclick="window.open(\'mailto:?subject=MapLite sharing Link&body=' + u + '\', \'_blank\', \'scrollbars=0, resizable=1, menubar=0, left=100, top=100, width=550, height=400, toolbar=0, status=0\');return false" title="Send email"');
             var l = '';
             for (j = 0; j < s.length; j++)
                 l += '<a rel="nofollow" style="display:inline-block;vertical-align:bottom;width:32px;height:32px;margin:0 6px 6px 0;padding:0;outline:none;background:url(' + f + fn + ') -' + 32 * j + 'px 0 no-repeat" href=' + s[j] + ' target="_blank"></a>';
