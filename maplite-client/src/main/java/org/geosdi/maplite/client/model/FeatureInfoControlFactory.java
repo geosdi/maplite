@@ -60,7 +60,7 @@ public class FeatureInfoControlFactory {
     public static WMSGetFeatureInfo createControl(Layer layer) {
         WMSGetFeatureInfoOptions options = new WMSGetFeatureInfoOptions();
         GetFeatureInfoVendorParam param = new GetFeatureInfoVendorParam();
-        WMS wms = WMS.narrowToWMS(layer.getJSObject());
+        WMS wms = WMS.narrowToLayer(layer.getJSObject());
         WMSParams params = wms.getParams();
         List<String> propertyNameList = Lists.<String>newArrayList(params.getJSObject().getPropertyNames().split(","));
         List<String> propertyValueList = Lists.<String>newArrayList(params.getJSObject().getPropertyValues().split(","));

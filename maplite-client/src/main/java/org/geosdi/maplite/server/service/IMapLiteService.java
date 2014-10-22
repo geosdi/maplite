@@ -35,9 +35,11 @@
  */
 package org.geosdi.maplite.server.service;
 
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
 import org.geosdi.maplite.shared.GPClientProject;
 import org.geosdi.maplite.shared.MapLiteException;
+import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
 
 /**
  * @author Nazzareno Sileno - CNR IMAA geoSDI Group
@@ -45,6 +47,8 @@ import org.geosdi.maplite.shared.MapLiteException;
  */
 public interface IMapLiteService {
 
-    GPClientProject loadProject(Long projectId, Long accountId, 
+    GPClientProject loadProject(Long projectId, Long accountId,
             HttpServletRequest request) throws MapLiteException;
+
+    List<MapLiteGeocodingResult> executeGeocodign(String address) throws MapLiteException;
 }

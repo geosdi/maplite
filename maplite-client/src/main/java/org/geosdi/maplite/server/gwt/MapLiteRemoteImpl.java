@@ -35,11 +35,13 @@
  */
 package org.geosdi.maplite.server.gwt;
 
+import java.util.List;
 import org.geosdi.maplite.client.service.MapLiteServiceRemote;
 import org.geosdi.maplite.server.service.impl.MapLiteService;
 import org.geosdi.maplite.server.spring.GPAutoInjectingRemoteServiceServlet;
 import org.geosdi.maplite.shared.GPClientProject;
 import org.geosdi.maplite.shared.MapLiteException;
+import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -58,6 +60,11 @@ public class MapLiteRemoteImpl extends GPAutoInjectingRemoteServiceServlet
     public GPClientProject loadProject(Long projectId, Long accountId) throws MapLiteException {
         return this.mapLiteService.loadProject(projectId, accountId,
                 super.getThreadLocalRequest());
+    }
+
+    @Override
+    public List<MapLiteGeocodingResult> executeGeoCoding(String address) throws MapLiteException {
+        return this.mapLiteService.executeGeocodign(address);
     }
 
 }

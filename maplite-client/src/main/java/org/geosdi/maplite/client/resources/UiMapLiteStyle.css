@@ -1,0 +1,78 @@
+/* 
+    Created on : 20-ott-2014, 18.55.26
+    Author     : Nazzareno Sileno - CNR IMAA geoSDI Group
+*/
+
+.getFeatureInfoStyle{
+    position: absolute;
+    width: 200px;
+    height: 250px;
+    max-height: 250px;
+    z-index: 40;
+}
+
+/*.geocodingTextFieldCss*/ 
+/*input[class="geocodingTextFieldCss"]{
+    top: 20px!important;
+    right: 15px !important;
+}*/
+
+.geocodingBoxCss {
+    position: absolute;
+    /*top: 40px!important;*/
+    right: 15px !important;
+    z-index: 21;
+    height: 130px;
+    width: 100%;
+    /*border: 1px #000 solid;*/
+    /*opacity: 0.85;*/
+    /*background-color: transparent;*/
+}
+
+.geocodingTextFieldCss {
+    position: relative;
+    /*z-index: 21;*/
+    height: 30px;
+    width: 100%;
+    border: 1px #000 solid;
+    opacity: 0.85;
+    /*background-color: transparent;*/
+}
+
+.geocodingResultsCss {
+    position: relative;
+    height: 100px;
+    width: 100%;
+    background-color: white;
+    /*border: 1px #000 solid;*/
+    /*opacity: 0.85;*/
+    /*background-color: transparent;*/
+}
+
+button::-moz-focus-inner {
+    border: 0;
+}
+
+.collapseLegendButton {
+    position: absolute;
+    top: 40px!important;
+    left: 285px!important;
+    z-index: 21;
+    height: 32px;
+    width: 32px;
+    border: none;
+    background-color: transparent;
+    background-image: url("img/expand_layer32.png");
+}
+
+.expandLegendButton {
+    position: absolute;
+    top: 20px!important;
+    left: 20px!important;
+    z-index: 21;
+    height: 32px;
+    width: 32px;
+    border: none;
+    background-color: transparent;
+    background-image: url("img/expand_layer32.png");
+}

@@ -36,8 +36,10 @@
 package org.geosdi.maplite.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
+import java.util.List;
 import org.geosdi.maplite.shared.GPClientProject;
 import org.geosdi.maplite.shared.MapLiteException;
+import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
 
 /**
  * @author Nazzareno Sileno - CNR IMAA geoSDI Group
@@ -45,6 +47,9 @@ import org.geosdi.maplite.shared.MapLiteException;
  */
 public interface MapLiteServiceRemoteAsync {
 
-    void loadProject(Long projectId, Long accountId, AsyncCallback<GPClientProject> callBack) 
+    void loadProject(Long projectId, Long accountId, AsyncCallback<GPClientProject> callBack)
+            throws MapLiteException;
+
+    void executeGeoCoding(String address, AsyncCallback<List<MapLiteGeocodingResult>> callBack)
             throws MapLiteException;
 }

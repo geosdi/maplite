@@ -3,6 +3,8 @@
 <ui:UiBinder xmlns:ui="urn:ui:com.google.gwt.uibinder"
              xmlns:g="urn:import:com.google.gwt.user.client.ui"
              xmlns:m="urn:import:org.geosdi.maplite.client">
+    <ui:with field="mapLiteStyle" type="org.geosdi.maplite.client.resources.UiMapLiteStyle">
+    </ui:with>
     <!--xmlns:b="urn:import:com.github.gwtbootstrap.client.ui">-->
 	
     <!--<g:AbsolutePanel ui:field="mapPanel"/>-->
@@ -15,23 +17,24 @@
         </g:west> 
     </g:DockLayoutPanel>-->
     
-    <ui:style>
+    <ui:style>              
         .layerHeight{
         height: 80%;
-        }
-        
-        .getFeatureInfoStyle{
-            position: absolute;
-            width: 200px;
-            height: 250px;
-            max-height: 250px;
-            z-index: 40;
         }
     </ui:style>
     
     <g:LayoutPanel ui:field="layoutPanel">
         <g:layer>
             <g:HTMLPanel ui:field="mapPanel"/>
+        </g:layer>
+        <g:layer>
+            <g:Button styleName="{mapLiteStyle.getStyle.expandLegendButton}" ui:field="hideLegendButton"/>
+        </g:layer>
+        <g:layer right="5px" width="25%" top="40px" height="130px">
+            <g:VerticalPanel styleName="{mapLiteStyle.getStyle.geocodingBoxCss}">
+                <g:TextBox styleName="{mapLiteStyle.getStyle.geocodingTextFieldCss}" ui:field="geocodingTextBox"/>
+                <g:ListBox styleName="{mapLiteStyle.getStyle.geocodingResultsCss}" ui:field="geocodingListBox"/>
+            </g:VerticalPanel>
         </g:layer>
         <g:layer>
             <g:VerticalPanel ui:field="mapInfoPanel"/>
@@ -43,7 +46,7 @@
         </g:layer>
         <g:layer>
             <!--<m:DialogBoxWithCloseButton styleName='{style.getFeatureInfoStyle}' ui:field="getFeatureInfoPanel"/>-->
-            <g:PopupPanel styleName='{style.getFeatureInfoStyle}' ui:field="getFeatureInfoPanel"/>
+            <g:PopupPanel styleName='{mapLiteStyle.getStyle.getFeatureInfoStyle}' ui:field="getFeatureInfoPanel"/>
         </g:layer>
     </g:LayoutPanel>
 

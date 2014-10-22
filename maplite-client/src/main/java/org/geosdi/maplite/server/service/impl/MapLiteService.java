@@ -36,6 +36,14 @@
 package org.geosdi.maplite.server.service.impl;
 
 import com.google.common.collect.Lists;
+import com.google.maps.GeoApiContext;
+import com.google.maps.GeocodingApi;
+import com.google.maps.GeocodingApiRequest;
+import com.google.maps.model.AddressComponent;
+import com.google.maps.model.AddressComponentType;
+import com.google.maps.model.AddressType;
+import com.google.maps.model.GeocodingResult;
+import com.google.maps.model.Geometry;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
@@ -65,6 +73,14 @@ import org.geosdi.maplite.shared.GPLayerClientInfo;
 import org.geosdi.maplite.shared.GPStyleStringBeanModel;
 import org.geosdi.maplite.shared.IGPFolderElements;
 import org.geosdi.maplite.shared.MapLiteException;
+import org.geosdi.maplite.shared.geocoding.MapLiteAddressComponent;
+import org.geosdi.maplite.shared.geocoding.MapLiteAddressComponentType;
+import org.geosdi.maplite.shared.geocoding.MapLiteAddressType;
+import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingBounds;
+import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingGeometry;
+import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingLatLng;
+import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
+import org.geosdi.maplite.shared.geocoding.MapLiteLocationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
@@ -87,6 +103,9 @@ public class MapLiteService implements IMapLiteService {
 
     private GeoServerRESTReader sharedRestReader;
 
+    private GeoApiContext context = new GeoApiContext().
+            setApiKey("AIzaSyAYwt6RZz7ATdEBel61EUABVww9l8gPaJE");
+
     /**
      * @param geoPlatformServiceClient the geoPlatformServiceClient to set
      */
@@ -94,6 +113,91 @@ public class MapLiteService implements IMapLiteService {
     public void setGeoPlatformServiceClient(
             @Qualifier("geoPlatformServiceClient") GeoPlatformService geoPlatformServiceClient) {
         this.geoPlatformServiceClient = geoPlatformServiceClient;
+    }
+
+    public List<MapLiteGeocodingResult> executeGeocodign(String address) {
+        GeocodingApiRequest req = GeocodingApi.newRequest(context).address(address);
+        List<MapLiteGeocodingResult> mapLiteGeocodingResults = null;
+        try {
+            mapLiteGeocodingResults = this.convertGeoCodingresult(req.await());
+        } catch (Exception e) {
+            logger.error("Error executing geocode: " + e);
+        }
+
+        return mapLiteGeocodingResults;
+    }
+
+    private MapLiteAddressType[] converAddressComponentType(AddressType[] ats) {
+        MapLiteAddressType[] mapLiteAT = new MapLiteAddressType[ats.length];
+        int i = 0;
+        for (AddressType at : ats) {
+            mapLiteAT[i] = MapLiteAddressType.valueOf(at.name());
+        }
+        return mapLiteAT;
+    }
+
+    private MapLiteAddressComponentType[] converAddressComponentType(AddressComponentType[] acts) {
+        MapLiteAddressComponentType[] mapLiteACT = new MapLiteAddressComponentType[acts.length];
+        int i = 0;
+        for (AddressComponentType act : acts) {
+            mapLiteACT[i] = MapLiteAddressComponentType.valueOf(act.name());
+        }
+        return mapLiteACT;
+    }
+
+    private MapLiteAddressComponent[] converAddressComponent(AddressComponent[] acs) {
+        MapLiteAddressComponent[] mapLiteAddressComponents = new MapLiteAddressComponent[acs.length];
+        int i = 0;
+        for (AddressComponent ac : acs) {
+            MapLiteAddressComponent mac = new MapLiteAddressComponent();
+            mac.longName = ac.longName;
+            mac.shortName = ac.shortName;
+            mac.types = this.converAddressComponentType(ac.types);
+            mapLiteAddressComponents[i] = mac;
+        }
+        return mapLiteAddressComponents;
+    }
+
+    private MapLiteGeocodingGeometry convertGeometry(Geometry geometry) {
+        MapLiteGeocodingGeometry mapLiteAddressGeometry = new MapLiteGeocodingGeometry();
+        MapLiteGeocodingBounds bounds = new MapLiteGeocodingBounds();
+        bounds.northeast = new MapLiteGeocodingLatLng(geometry.bounds.northeast.lat,
+                geometry.bounds.northeast.lng);
+        bounds.southwest = new MapLiteGeocodingLatLng(geometry.bounds.southwest.lat,
+                geometry.bounds.southwest.lng);
+        mapLiteAddressGeometry.bounds = bounds;
+        MapLiteGeocodingLatLng location = new MapLiteGeocodingLatLng(geometry.location.lat,
+                geometry.location.lng);
+        mapLiteAddressGeometry.location = location;
+        mapLiteAddressGeometry.locationType = MapLiteLocationType.valueOf(geometry.locationType.name());
+        MapLiteGeocodingBounds viewport = new MapLiteGeocodingBounds();
+        viewport.northeast = new MapLiteGeocodingLatLng(geometry.viewport.northeast.lat,
+                geometry.viewport.northeast.lng);
+        viewport.southwest = new MapLiteGeocodingLatLng(geometry.viewport.southwest.lat,
+                geometry.viewport.southwest.lng);
+        mapLiteAddressGeometry.viewport = viewport;
+        return mapLiteAddressGeometry;
+    }
+
+    private List<MapLiteGeocodingResult> convertGeoCodingresult(GeocodingResult[] results) {
+        List<MapLiteGeocodingResult> mapLiteGeocodingResults = Lists.<MapLiteGeocodingResult>newArrayList();
+        MapLiteGeocodingResult mapLiteGeocodingResult;
+        int count = 0;
+        for (GeocodingResult result : results) {
+            mapLiteGeocodingResult = new MapLiteGeocodingResult();
+            mapLiteGeocodingResult.addressComponents
+                    = converAddressComponent(result.addressComponents);
+            mapLiteGeocodingResult.formattedAddress = result.formattedAddress;
+            mapLiteGeocodingResult.geometry = this.convertGeometry(result.geometry);
+            mapLiteGeocodingResult.partialMatch = result.partialMatch;
+            mapLiteGeocodingResult.postcodeLocalities = result.postcodeLocalities;
+            mapLiteGeocodingResult.types = converAddressComponentType(result.types);
+            mapLiteGeocodingResults.add(mapLiteGeocodingResult);
+            if (++count == 5) {
+                break;
+            }
+        }
+        return mapLiteGeocodingResults;
     }
 
     public GPClientProject convertToGPClientProject(ProjectDTO projectDTO, String baseLayer) {

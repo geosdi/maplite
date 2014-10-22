@@ -38,8 +38,10 @@ package org.geosdi.maplite.client.service;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
+import java.util.List;
 import org.geosdi.maplite.shared.GPClientProject;
 import org.geosdi.maplite.shared.MapLiteException;
+import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
 
 /**
  * @author Nazzareno Sileno - CNR IMAA geoSDI Group
@@ -63,5 +65,7 @@ public interface MapLiteServiceRemote extends RemoteService {
     }
 
     GPClientProject loadProject(Long projectId, Long accountId) throws MapLiteException;
+
+    List<MapLiteGeocodingResult> executeGeoCoding(String address) throws MapLiteException;
 
 }

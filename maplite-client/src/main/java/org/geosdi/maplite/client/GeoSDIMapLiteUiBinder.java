@@ -4,15 +4,12 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
-import com.google.gwt.core.client.Scheduler;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
-import com.google.gwt.event.logical.shared.CloseEvent;
-import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
-import com.google.gwt.user.client.Command;
+import com.google.gwt.uibinder.client.UiHandler;
 import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.Button;
@@ -22,8 +19,9 @@ import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.LayoutPanel;
+import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
-import com.google.gwt.user.client.ui.ScrollPanel;
+import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
 import java.util.List;
@@ -32,10 +30,12 @@ import java.util.logging.Logger;
 import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
 import org.geosdi.maplite.client.model.BaseLayerBuilder;
 import org.geosdi.maplite.client.model.CoordinateReferenceSystem;
-import org.geosdi.maplite.client.model.FeatureInfoControlFactory;
 import org.geosdi.maplite.client.model.LegendBuilder;
 import org.geosdi.maplite.client.model.MapLiteUrlRewriter;
+import org.geosdi.maplite.client.resources.UiMapLiteStyle;
 import org.geosdi.maplite.client.service.MapLiteServiceRemote;
+import org.geosdi.maplite.client.widget.MapLiteGeocodingTools;
+import org.geosdi.maplite.client.widget.MapLiteGetFeatureInfoTool;
 import org.geosdi.maplite.shared.ClientRasterInfo;
 import org.geosdi.maplite.shared.GPClientProject;
 import org.geosdi.maplite.shared.GPFolderClientInfo;
@@ -49,8 +49,6 @@ import org.gwtopenmaps.openlayers.client.Projection;
 import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import org.gwtopenmaps.openlayers.client.control.ScaleLine;
-import org.gwtopenmaps.openlayers.client.control.WMSGetFeatureInfo;
-import org.gwtopenmaps.openlayers.client.event.GetFeatureInfoListener;
 import org.gwtopenmaps.openlayers.client.event.MapMoveEndListener;
 import org.gwtopenmaps.openlayers.client.event.MapZoomListener;
 import org.gwtopenmaps.openlayers.client.layer.Layer;
@@ -86,61 +84,42 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
     @UiField
     PopupPanel getFeatureInfoPanel;
-//    DialogBoxWithCloseButton getFeatureInfoPanel;
 
     @UiField
     LayoutPanel layoutPanel;
 
-    WMS wmsLayer;
+    @UiField
+    Button hideLegendButton;
 
-    private final List<WMSGetFeatureInfo> wMSGetFeatureInfos
-            = Lists.<WMSGetFeatureInfo>newArrayList();
-    private int count = 0;
-    private final ScrollPanel getFeatureInfoScrollPanel;
-    private VerticalPanel getFeatureInfoVerticalPanel;
+    @UiField
+    UiMapLiteStyle mapLiteStyle;
+
+    @UiField
+    TextBox geocodingTextBox;
+
+    @UiField
+    ListBox geocodingListBox;
 
     private final java.util.Map<GPFolderClientInfo, VerticalPanel> legendPanels
             = Maps.<GPFolderClientInfo, VerticalPanel>newHashMap();
+    private MapLiteGetFeatureInfoTool getFeatureInfoTool;
     //Temporary working items
     private VerticalPanel tmpPanel;
     private GPFolderClientInfo tmpFolder;
 
     public GeoSDIMapLiteUiBinder() {
         initWidget(ourUiBinder.createAndBindUi(this));
+
+        mapLiteStyle.getStyle().ensureInjected();
+
         layoutPanel.setSize("99.8%", "99.8%");
         mapInfoPanel.getElement().setId("mapInfoPanel");
+        mapInfoPanel.setVisible(false);
         layersPanel.getElement().setId("layersPanel");
+        layersPanel.setVisible(false);
         mapPanel.add(initMap());
         mapPanel.getElement().setId("map");
-        this.getFeatureInfoVerticalPanel = new VerticalPanel();
-        getFeatureInfoPanel.setAutoHideEnabled(true);
-        getFeatureInfoPanel.setModal(false);
-        getFeatureInfoPanel.setSize("450px", "350px");
-        getFeatureInfoPanel.setVisible(false);
-        getFeatureInfoPanel.setTitle("Get Feature Info");
-        getFeatureInfoPanel.addCloseHandler(new CloseHandler<PopupPanel>() {
 
-            @Override
-            public void onClose(CloseEvent<PopupPanel> event) {
-                getFeatureInfoVerticalPanel.clear();
-                getFeatureInfoPanel.setVisible(false);
-            }
-        });
-        this.getFeatureInfoScrollPanel = new ScrollPanel();
-        this.getFeatureInfoScrollPanel.setSize("400px", "250px");
-        this.getFeatureInfoScrollPanel.addStyleName("getFeatureInfoBackgroud");
-        Button btnClose = new Button("Close");
-        btnClose.addClickHandler(new ClickHandler() {
-            @Override
-            public void onClick(ClickEvent event) {
-                getFeatureInfoPanel.hide();
-            }
-        });
-        this.getFeatureInfoScrollPanel.add(this.getFeatureInfoVerticalPanel);
-        VerticalPanel vp = new VerticalPanel();
-        vp.add(btnClose);
-        vp.add(getFeatureInfoScrollPanel);
-        this.getFeatureInfoPanel.add(vp);
     }
 
     private MapWidget initMap() {
@@ -236,18 +215,13 @@ public class GeoSDIMapLiteUiBinder extends Composite {
             }
         }
 
-        return mapWidget;
-    }
+        //Initialize geocoding tools
+        MapLiteGeocodingTools geocodingTools = new MapLiteGeocodingTools(
+                this.map, this.geocodingListBox, this.geocodingTextBox);
 
-    private void checkLastElement() {
-        logger.info("@@@@@@@@@@@@@@@@@@ Cache Dimension : " + this.wMSGetFeatureInfos.size()
-                + " of checked element: " + (count + 1));
-        if (++count == this.wMSGetFeatureInfos.size()) {
-//            getFeatureInfoPanel.setVisible(true);
-//            getFeatureInfoPanel.center();
-            logger.info("@@@@@@@@@@@@@@@@@@ on Displaying getFeatureInfoPanel");
-            count = 0;
-        }
+        this.getFeatureInfoTool = new MapLiteGetFeatureInfoTool(
+                this.getFeatureInfoPanel, map);
+        return mapWidget;
     }
 
     private void addResourcesToTheMap(GPClientProject clientProject) {
@@ -299,10 +273,13 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 } else {
                     wmsParams.setStyles("");
                 }
+                if (GPSharedUtils.isNotEmpty(raster.getCqlFilter())) {
+                    wmsParams.setCQLFilter(raster.getCqlFilter());
+                }
                 logger.info("Style for layer: " + layerName + " - style: " + wmsParams.getStyles());
                 wmsParams.setTransparent(true);
 
-                wmsLayer = new WMS(layerName, raster.getDataSource(), wmsParams, wmsLayerParams);
+                WMS wmsLayer = new WMS(layerName, raster.getDataSource(), wmsParams, wmsLayerParams);
                 wmsLayer.setIsBaseLayer(Boolean.FALSE);
                 wmsLayer.setSingleTile(raster.isSingleTileRequest());
                 wmsLayer.setOpacity(raster.getOpacity());
@@ -311,42 +288,8 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 logger.log(Level.INFO, "Z-Index value: " + wmsLayer.getZIndex());
                 wmsLayer.setIsVisible(tmpFolder.isChecked() ? raster.isChecked() : false);
 
-                WMSGetFeatureInfo wmsGetFeatureInfo = FeatureInfoControlFactory.createControl(wmsLayer);
-                wmsGetFeatureInfo.addGetFeatureListener(new GetFeatureInfoListener() {
-//
-                    @Override
-                    public void onGetFeatureInfo(final GetFeatureInfoListener.GetFeatureInfoEvent eventObject) {
-                        try {
-                            Scheduler.get().scheduleDeferred(new Command() {
-                                @Override
-                                public void execute() {
-
-                                    logger.info("...GetFeatureInfo executing...");
-                                    if (textContainsNotEmptyHTMLBody(eventObject.getText())) {
-                                        logger.info("*** GetFeatureInfo has a not empty body");
-                                        try {
-                                            getFeatureInfoVerticalPanel.add(new HTMLPanel(eventObject.getText()));
-                                            if (!getFeatureInfoPanel.isVisible()) {
-                                                getFeatureInfoPanel.setVisible(true);
-                                                getFeatureInfoPanel.center();
-                                            }
-                                        } catch (Exception e) {
-                                            logger.warning("**** ERROR on adding getFeatureInfo to the showing panel: " + e.toString());
-                                        }
-                                    }
-                                    logger.finer("...GetFeatureInfo getFeatures...: " + eventObject.getFeatures());
-                                    logger.finer("...GetFeatureInfo getText...: " + eventObject.getText());
-                                    checkLastElement();
-                                }
-                            });
-                        } catch (Exception e) {
-                            logger.warning("Error in getFeatureInfo: " + e);
-                        }
-                    }
-                });
-                map.addControl(wmsGetFeatureInfo);
-                this.wMSGetFeatureInfos.add(wmsGetFeatureInfo);
-                wmsGetFeatureInfo.activate();
+                //Adds getFeatureInfo
+                this.getFeatureInfoTool.addGetFeatureInfoToWMS(wmsLayer);
 
                 map.addLayer(wmsLayer);
                 map.setLayerZIndex(wmsLayer, raster.getzIndex());
@@ -356,27 +299,6 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 tmpPanel.add(legendImage);
             }
         }
-    }
-
-    private boolean textContainsNotEmptyHTMLBody(String html) {
-        boolean result = false;
-        if (GPSharedUtils.isNotEmpty(html) && html.toLowerCase().trim().contains("<body")) {
-            String bodyHtml = html.toLowerCase().trim();
-            int bodyIndex = bodyHtml.indexOf("<body") + 5;
-            logger.finest("@@@@@ textContainsNotEmptyHTMLBody html to analize: " + bodyHtml);
-            bodyHtml = bodyHtml.substring(bodyIndex);
-            bodyIndex = bodyHtml.indexOf(">") + 1;
-            String bodyContent = bodyHtml.substring(bodyIndex, bodyHtml.indexOf("</body>"));
-            logger.finest("Body content: " + bodyContent);
-            bodyContent = bodyContent.replaceAll("\r", "");
-            bodyContent = bodyContent.replaceAll("\n", "");
-            logger.finest("Body content replaced new lines: " + bodyContent);
-            if (!bodyContent.trim().isEmpty()) {
-                result = true;
-                logger.finest("****** Found body content: " + bodyContent.trim());
-            }
-        }
-        return result;
     }
 
     private void manageLayerVisibility(Boolean visible, IGPFolderElements folderElement) {
@@ -402,6 +324,18 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                     }
                 }
             }
+        }
+    }
+
+    @UiHandler("hideLegendButton")
+    void handleClick(ClickEvent e) {
+        boolean isVisible = this.mapInfoPanel.isVisible();
+        this.layersPanel.setVisible(!isVisible);
+        this.mapInfoPanel.setVisible(!isVisible);
+        if (isVisible) {
+            this.hideLegendButton.setStyleName(this.mapLiteStyle.getStyle().expandLegendButton());
+        } else {
+            this.hideLegendButton.setStyleName(this.mapLiteStyle.getStyle().collapseLegendButton());
         }
     }
 
