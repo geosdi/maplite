@@ -115,8 +115,9 @@ public class MapLiteService implements IMapLiteService {
         this.geoPlatformServiceClient = geoPlatformServiceClient;
     }
 
-    public List<MapLiteGeocodingResult> executeGeocodign(String address) {
-        GeocodingApiRequest req = GeocodingApi.newRequest(context).address(address);
+    @Override
+    public List<MapLiteGeocodingResult> executeGeocodign(String address, String language) {
+        GeocodingApiRequest req = GeocodingApi.newRequest(context).address(address).language(language);
         List<MapLiteGeocodingResult> mapLiteGeocodingResults = null;
         try {
             mapLiteGeocodingResults = this.convertGeoCodingresult(req.await());

@@ -50,5 +50,6 @@ public interface IMapLiteService {
     GPClientProject loadProject(Long projectId, Long accountId,
             HttpServletRequest request) throws MapLiteException;
 
-    List<MapLiteGeocodingResult> executeGeocodign(String address) throws MapLiteException;
+    List<MapLiteGeocodingResult> executeGeocodign(String address,
+            String language) throws MapLiteException;
 }

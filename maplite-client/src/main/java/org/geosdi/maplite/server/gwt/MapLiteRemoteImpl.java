@@ -64,7 +64,7 @@ public class MapLiteRemoteImpl extends GPAutoInjectingRemoteServiceServlet
 
     @Override
     public List<MapLiteGeocodingResult> executeGeoCoding(String address) throws MapLiteException {
-        return this.mapLiteService.executeGeocodign(address);
+        return this.mapLiteService.executeGeocodign(address, super.getThreadLocalRequest().getLocale().getLanguage());
     }
 
 }
