@@ -19,24 +19,19 @@
 
 .geocodingBoxCss {
     position: absolute;
-    /*top: 40px!important;*/
     right: 15px !important;
     z-index: 21;
     height: 130px;
     width: 100%;
-    /*border: 1px #000 solid;*/
-    /*opacity: 0.85;*/
-    /*background-color: transparent;*/
 }
 
 .geocodingTextFieldCss {
     position: relative;
     /*z-index: 21;*/
     height: 30px;
-    width: 100%;
+    width: 99%;
     border: 1px #000 solid;
     opacity: 0.85;
-    /*background-color: transparent;*/
 }
 
 .geocodingResultsCss {
@@ -44,9 +39,6 @@
     height: 100px;
     width: 100%;
     background-color: white;
-    /*border: 1px #000 solid;*/
-    /*opacity: 0.85;*/
-    /*background-color: transparent;*/
 }
 
 button::-moz-focus-inner {
@@ -54,10 +46,9 @@ button::-moz-focus-inner {
 }
 
 .collapseLegendButton {
-    position: absolute;
-    top: 40px!important;
-    left: 285px!important;
-    z-index: 21;
+    position: relative;
+    top: 25px!important;
+    left: 265px!important;
     height: 32px;
     width: 32px;
     border: none;
@@ -66,13 +57,24 @@ button::-moz-focus-inner {
 }
 
 .expandLegendButton {
-    position: absolute;
-    top: 20px!important;
-    left: 20px!important;
-    z-index: 21;
+    position: relative;
+    top: 5px!important;
     height: 32px;
     width: 32px;
     border: none;
     background-color: transparent;
     background-image: url("img/expand_layer32.png");
+}
+.legendBox {
+    position: absolute;
+    top: 10px!important;
+    left: 20px!important;
+    z-index: 21;
+}
+
+.geoSDIWatermark {
+    position: relative;
+    height: 10px;
+    width: 100%;
+    font-size: smaller;
 }

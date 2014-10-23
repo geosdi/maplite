@@ -13,11 +13,10 @@ public interface UiMapLiteStyle extends ClientBundle {
 
 //        @ClassName("hideLegendButtonCss")
 //        String hideLegendButtonCss();
-
         String geocodingResultsCss();
-        
+
         String geocodingBoxCss();
-        
+
         String geocodingTextFieldCss();
 
         String expandLegendButton();
@@ -25,6 +24,10 @@ public interface UiMapLiteStyle extends ClientBundle {
         String collapseLegendButton();
 
         String getFeatureInfoStyle();
+
+        String geoSDIWatermark();
+
+        String legendBox();
     }
 
     @Source("UiMapLiteStyle.css")

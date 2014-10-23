@@ -28,7 +28,12 @@
             <g:HTMLPanel ui:field="mapPanel"/>
         </g:layer>
         <g:layer>
-            <g:Button styleName="{mapLiteStyle.getStyle.expandLegendButton}" ui:field="hideLegendButton"/>
+            <g:VerticalPanel styleName="{mapLiteStyle.getStyle.legendBox}">
+                <g:HTMLPanel styleName="{mapLiteStyle.getStyle.geoSDIWatermark}">
+                    Powered by&nbsp;<a href="http://www.geosdi.org" target="_blank">geoSDI</a>&nbsp;©
+                </g:HTMLPanel>
+                <g:Button styleName="{mapLiteStyle.getStyle.expandLegendButton}" ui:field="hideLegendButton"/>
+            </g:VerticalPanel>
         </g:layer>
         <g:layer right="5px" width="25%" top="40px" height="130px">
             <g:VerticalPanel styleName="{mapLiteStyle.getStyle.geocodingBoxCss}">

@@ -94,6 +94,8 @@ public class MapLiteGeocodingTools {
 
         });
 
+        this.geocodingTextBox.setTitle("Search address");
+        this.geocodingTextBox.getElement().setPropertyString("placeholder", "Insert the address to search...");
         this.geocodingTextBox.addKeyDownHandler(
                 new KeyDownHandler() {
 
