@@ -30,7 +30,7 @@
         <g:layer>
             <g:VerticalPanel styleName="{mapLiteStyle.getStyle.legendBox}">
                 <g:HTMLPanel styleName="{mapLiteStyle.getStyle.geoSDIWatermark}">
-                    Powered by&nbsp;<a href="http://www.geosdi.org" target="_blank">geoSDI</a>&nbsp;©
+                    &nbsp;Powered by&nbsp;<a href="http://www.geosdi.org" target="_blank">geoSDI</a>&nbsp;&copy;&nbsp;
                 </g:HTMLPanel>
                 <g:Button styleName="{mapLiteStyle.getStyle.expandLegendButton}" ui:field="hideLegendButton"/>
             </g:VerticalPanel>

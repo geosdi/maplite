@@ -32,6 +32,7 @@
     width: 99%;
     border: 1px #000 solid;
     opacity: 0.85;
+    text-indent: 5px;
 }
 
 .geocodingResultsCss {
@@ -67,14 +68,18 @@ button::-moz-focus-inner {
 }
 .legendBox {
     position: absolute;
-    top: 10px!important;
+    top: 8px!important;
     left: 20px!important;
     z-index: 21;
 }
 
 .geoSDIWatermark {
     position: relative;
-    height: 10px;
+    height: 13px;
     width: 100%;
     font-size: smaller;
+    opacity: 0.85;
+    -moz-border-radius: 3px;
+    border-radius: 3px;
+    background-color: white;
 }
