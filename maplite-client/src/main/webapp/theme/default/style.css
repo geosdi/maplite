@@ -436,7 +436,7 @@ span.olGoogleAttribution.hybrid a, span.olGoogleAttribution.satellite a {
 
 div.olControlZoom {
     position: absolute;
-    bottom: 25px;
+    bottom: 50px;
     right: 8px;
     background: rgba(255,255,255,0.4);
     border-radius: 4px;
