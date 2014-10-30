@@ -196,7 +196,7 @@ public enum BaseLayerEnum {
         wmsParams.setLayers("Mappa_di_Base");
         wmsParams.setStyles("");
         WMSOptions wmsLayerParams = new WMSOptions();
-        wmsLayerParams.setResolutions(baseMapResolutions);
+//        wmsLayerParams.setResolutions(baseMapResolutions);
         wmsLayerParams.setProjection(
                 CoordinateReferenceSystem.WGS_84.getCode());
         wmsLayerParams.setTileSize(new Size(256, 256));
@@ -227,7 +227,7 @@ public enum BaseLayerEnum {
         wmsParams.setLayers("StratiDiBase:nullMap");
         wmsParams.setStyles("");
         WMSOptions wmsLayerParams = new WMSOptions();
-        wmsLayerParams.setResolutions(baseMapResolutions);
+//        wmsLayerParams.setResolutions(baseMapResolutions);
         wmsLayerParams.setProjection(
                 CoordinateReferenceSystem.WGS_84.getCode());
         wmsLayerParams.setTileSize(new Size(256, 256));
@@ -245,7 +245,7 @@ public enum BaseLayerEnum {
         wmsParams.setLayers("basic");
         wmsParams.setStyles("");
         WMSOptions wmsLayerParams = new WMSOptions();
-        wmsLayerParams.setResolutions(baseMapResolutions);
+//        wmsLayerParams.setResolutions(baseMapResolutions);
         wmsLayerParams.setProjection(
                 CoordinateReferenceSystem.WGS_84.getCode());
         wmsLayerParams.setTileSize(new Size(256, 256));
@@ -344,7 +344,7 @@ public enum BaseLayerEnum {
         emptyLayerOptions.setAttribution("EmptyLayer (c) geoSDI"); //lets set some copyright msg as attribution
         emptyLayerOptions.setIsBaseLayer(true); //make it a baselayer.
         emptyLayerOptions.setProjection(CoordinateReferenceSystem.WGS_84.getCode());
-        emptyLayerOptions.setResolutions(baseMapResolutions);
+//        emptyLayerOptions.setResolutions(baseMapResolutions);
         EmptyLayer emptyLayer = new EmptyLayer("Empty layer", emptyLayerOptions);
         return emptyLayer;
     }
