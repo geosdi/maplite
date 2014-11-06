@@ -161,7 +161,7 @@ public class MapLiteService implements IMapLiteService {
     private List<MapLiteAddressComponent> converAddressComponent(List<GCAddressComponent> acs) {
         List<MapLiteAddressComponent> mapLiteAddressComponents = new ArrayList<MapLiteAddressComponent>(acs.size());
         for (GCAddressComponent ac : acs) {
-            logger.info("Ekkolo:::::::::::::::::::::::::." + ac.toString());
+            logger.debug("Address to convert: " + ac.toString());
             MapLiteAddressComponent mac = new MapLiteAddressComponent();
             mac.longName = ac.longName;
             mac.shortName = ac.shortName;

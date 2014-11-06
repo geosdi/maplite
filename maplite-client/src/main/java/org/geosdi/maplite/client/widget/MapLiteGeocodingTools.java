@@ -122,6 +122,11 @@ public class MapLiteGeocodingTools {
                                     showAddresses(result);
                                 }
                             });
+                } else if ((event.getNativeKeyCode() == KeyCodes.KEY_DELETE
+                        || event.getNativeKeyCode() == KeyCodes.KEY_BACKSPACE)
+                        && GPSharedUtils.isEmpty(addressToSearch)) {
+                    clearGeocodingListBox();
+                    geocodingListBox.setVisible(false);
                 } else if (GPSharedUtils.isNotEmpty(addressToSearch)
                         && addressToSearch.length() > 2) {
                     suggestTimer = new Timer() {
@@ -151,10 +156,9 @@ public class MapLiteGeocodingTools {
             }
 
             private void showAddresses(List<MapLiteGeocodingResult> addresses) {
-                if (addresses != null) {
+                if (GPSharedUtils.isNotEmpty(addresses)) {
                     logger.finest("Addresses received: " + addresses.toString());
-                    geocodingResults.clear();
-                    geocodingListBox.clear();
+                    this.clearGeocodingListBox();
                     geocodingResults.addAll(addresses);
                     for (MapLiteGeocodingResult singleresult : GPSharedUtils.safeList(addresses)) {
                         geocodingListBox.addItem(singleresult.formattedAddress);
@@ -162,6 +166,11 @@ public class MapLiteGeocodingTools {
                     geocodingListBox.setVisibleItemCount(5);
                     geocodingListBox.setVisible(true);
                 }
+            }
+
+            private void clearGeocodingListBox() {
+                geocodingResults.clear();
+                geocodingListBox.clear();
             }
         }
         );
