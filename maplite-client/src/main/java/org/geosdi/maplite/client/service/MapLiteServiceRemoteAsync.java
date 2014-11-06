@@ -50,6 +50,9 @@ public interface MapLiteServiceRemoteAsync {
     void loadProject(Long projectId, Long accountId, AsyncCallback<GPClientProject> callBack)
             throws MapLiteException;
 
-    void executeGeoCoding(String address, AsyncCallback<List<MapLiteGeocodingResult>> callBack)
+    void executeGeocoding(String address, AsyncCallback<List<MapLiteGeocodingResult>> callBack)
+            throws MapLiteException;
+
+    void suggestGeocoding(String suggestText, AsyncCallback<List<MapLiteGeocodingResult>> callBack)
             throws MapLiteException;
 }

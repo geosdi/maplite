@@ -6,6 +6,7 @@
 package org.geosdi.maplite.shared.geocoding;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * @author Nazzareno Sileno - CNR IMAA geoSDI Group
@@ -19,7 +20,7 @@ public class MapLiteGeocodingResult implements Serializable {
      * {@code addressComponents} is an array containing the separate address
      * components.
      */
-    public MapLiteAddressComponent[] addressComponents;
+    public List<MapLiteAddressComponent> addressComponents;
 
     /**
      * {@code formattedAddress} is the human-readable address of this location.
@@ -39,7 +40,7 @@ public class MapLiteGeocodingResult implements Serializable {
      * contained in a postal code. This is only present when the result is a
      * postal code that contains multiple localities.
      */
-    public String[] postcodeLocalities;
+    public List<String> postcodeLocalities;
 
     /**
      * {@code geometry} contains location information.
@@ -53,7 +54,7 @@ public class MapLiteGeocodingResult implements Serializable {
      * "locality" which indicates that "Chicago" is a city, and also returns
      * "political" which indicates it is a political entity.
      */
-    public MapLiteAddressType[] types;
+    public List<MapLiteAddressType> types;
 
     /**
      * {@code partialMatch} indicates that the geocoder did not return an exact

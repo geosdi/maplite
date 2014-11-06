@@ -8,8 +8,22 @@
            http://www.springframework.org/schema/context/spring-context-4.0.xsd"
        default-autowire="byName">
     
-    <!--org.geosdi.geoplatform.connectors.ws.service-->
     <context:component-scan base-package="org.geosdi.maplite,
-                            org.geosdi.maplite.server.service.impl" />
+        org.geosdi.maplite.connectors.ws.service, org.geosdi.maplite.server.service.impl" />
+    
+    <bean id="geocoderPropertyConfigurer"
+              class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="placeholderPrefix" value="geocoderws{" />
+        <property name="placeholderSuffix" value="}" />
+        <property name="nullValue" value="@null" />
+        <property name="locations">
+            <list>
+                <value>classpath:geocoder-ws.properties</value>
+                <value>file:${GP_DATA_DIR}/geocoder-ws.properties</value>
+            </list>
+        </property>
+        <property name="ignoreResourceNotFound" value="true" />
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
     
 </beans>

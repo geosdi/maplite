@@ -36,23 +36,22 @@
 package org.geosdi.maplite.server.service.impl;
 
 import com.google.common.collect.Lists;
-import com.google.maps.GeoApiContext;
-import com.google.maps.GeocodingApi;
-import com.google.maps.GeocodingApiRequest;
-import com.google.maps.model.AddressComponent;
-import com.google.maps.model.AddressComponentType;
-import com.google.maps.model.AddressType;
-import com.google.maps.model.GeocodingResult;
-import com.google.maps.model.Geometry;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
+import org.geosdi.geocoder.model.GCAddressComponent;
+import org.geosdi.geocoder.model.GCAddressComponentType;
+import org.geosdi.geocoder.model.GCAddressType;
+import org.geosdi.geocoder.model.GCGeocodingGeometry;
+import org.geosdi.geocoder.model.GCGeocodingResult;
+import org.geosdi.geocoder.model.elasticbean.ELGeocodingBean;
 import org.geosdi.geoplatform.core.model.GPAccountProject;
 import org.geosdi.geoplatform.core.model.GPBBox;
 import org.geosdi.geoplatform.exception.ResourceNotFoundFault;
@@ -64,6 +63,7 @@ import org.geosdi.geoplatform.responce.ProjectDTO;
 import org.geosdi.geoplatform.responce.RasterLayerDTO;
 import org.geosdi.geoplatform.responce.ShortLayerDTO;
 import org.geosdi.geoplatform.services.GeoPlatformService;
+import org.geosdi.geoplatform.services.GeocoderRestService;
 import org.geosdi.maplite.server.service.IMapLiteService;
 import org.geosdi.maplite.shared.BBoxClientInfo;
 import org.geosdi.maplite.shared.ClientRasterInfo;
@@ -100,11 +100,9 @@ public class MapLiteService implements IMapLiteService {
     //
     private GeoPlatformService geoPlatformServiceClient;
     //
+    private GeocoderRestService geocoderRestClient;
 
     private GeoServerRESTReader sharedRestReader;
-
-    private GeoApiContext context = new GeoApiContext().
-            setApiKey("AIzaSyAYwt6RZz7ATdEBel61EUABVww9l8gPaJE");
 
     /**
      * @param geoPlatformServiceClient the geoPlatformServiceClient to set
@@ -115,87 +113,151 @@ public class MapLiteService implements IMapLiteService {
         this.geoPlatformServiceClient = geoPlatformServiceClient;
     }
 
+    @Autowired
+    public void setGeocodingClientREST(
+            @Qualifier(value = "geocoderRestClient") GeocoderRestService geocoderRestClient) {
+        this.geocoderRestClient = geocoderRestClient;
+    }
+
     @Override
     public List<MapLiteGeocodingResult> executeGeocodign(String address, String language) {
-        GeocodingApiRequest req = GeocodingApi.newRequest(context).address(address).language(language);
         List<MapLiteGeocodingResult> mapLiteGeocodingResults = null;
         try {
-            mapLiteGeocodingResults = this.convertGeoCodingresult(req.await());
+            mapLiteGeocodingResults = this.convertGeoCodingresult(this.geocoderRestClient.executeGeocodignByAddress(address, language));
         } catch (Exception e) {
-            logger.error("Error executing geocode: " + e);
+            logger.error("Error executing geocode: " + Arrays.asList(e.getStackTrace()).toString());
         }
-
         return mapLiteGeocodingResults;
     }
 
-    private MapLiteAddressType[] converAddressComponentType(AddressType[] ats) {
-        MapLiteAddressType[] mapLiteAT = new MapLiteAddressType[ats.length];
-        int i = 0;
-        for (AddressType at : ats) {
-            mapLiteAT[i] = MapLiteAddressType.valueOf(at.name());
+    @Override
+    public List<MapLiteGeocodingResult> suggestGeocoding(String suggestText) {
+        List<MapLiteGeocodingResult> mapLiteGeocodingResults = null;
+        try {
+            mapLiteGeocodingResults = this.convertELGeoCodingresult(this.geocoderRestClient.suggestGeocodignByAddress(suggestText));
+        } catch (Exception e) {
+            logger.error("Error executing geocode: " + Arrays.asList(e.getStackTrace()).toString());
+        }
+        return mapLiteGeocodingResults;
+    }
+
+    private List<MapLiteAddressType> converAddressType(List<GCAddressType> ats) {
+        List<MapLiteAddressType> mapLiteAT = new ArrayList<MapLiteAddressType>(ats.size());
+        for (GCAddressType at : ats) {
+            mapLiteAT.add(MapLiteAddressType.valueOf(at.name()));
         }
         return mapLiteAT;
     }
 
-    private MapLiteAddressComponentType[] converAddressComponentType(AddressComponentType[] acts) {
-        MapLiteAddressComponentType[] mapLiteACT = new MapLiteAddressComponentType[acts.length];
+    private MapLiteAddressComponentType[] converAddressComponentType(List<GCAddressComponentType> acts) {
+        MapLiteAddressComponentType[] mapLiteACT = new MapLiteAddressComponentType[acts.size()];
         int i = 0;
-        for (AddressComponentType act : acts) {
+        for (GCAddressComponentType act : acts) {
             mapLiteACT[i] = MapLiteAddressComponentType.valueOf(act.name());
         }
         return mapLiteACT;
     }
 
-    private MapLiteAddressComponent[] converAddressComponent(AddressComponent[] acs) {
-        MapLiteAddressComponent[] mapLiteAddressComponents = new MapLiteAddressComponent[acs.length];
-        int i = 0;
-        for (AddressComponent ac : acs) {
+    private List<MapLiteAddressComponent> converAddressComponent(List<GCAddressComponent> acs) {
+        List<MapLiteAddressComponent> mapLiteAddressComponents = new ArrayList<MapLiteAddressComponent>(acs.size());
+        for (GCAddressComponent ac : acs) {
+            logger.info("Ekkolo:::::::::::::::::::::::::." + ac.toString());
             MapLiteAddressComponent mac = new MapLiteAddressComponent();
             mac.longName = ac.longName;
             mac.shortName = ac.shortName;
-            mac.types = this.converAddressComponentType(ac.types);
-            mapLiteAddressComponents[i] = mac;
+            if (ac.types != null) {
+                mac.types = this.converAddressComponentType(ac.types);
+            }
+            mapLiteAddressComponents.add(mac);
         }
         return mapLiteAddressComponents;
     }
 
-    private MapLiteGeocodingGeometry convertGeometry(Geometry geometry) {
+    private MapLiteGeocodingGeometry convertGeometry(GCGeocodingGeometry geometry) {
         MapLiteGeocodingGeometry mapLiteAddressGeometry = new MapLiteGeocodingGeometry();
-        MapLiteGeocodingBounds bounds = new MapLiteGeocodingBounds();
-        bounds.northeast = new MapLiteGeocodingLatLng(geometry.bounds.northeast.lat,
-                geometry.bounds.northeast.lng);
-        bounds.southwest = new MapLiteGeocodingLatLng(geometry.bounds.southwest.lat,
-                geometry.bounds.southwest.lng);
-        mapLiteAddressGeometry.bounds = bounds;
-        MapLiteGeocodingLatLng location = new MapLiteGeocodingLatLng(geometry.location.lat,
-                geometry.location.lng);
-        mapLiteAddressGeometry.location = location;
-        mapLiteAddressGeometry.locationType = MapLiteLocationType.valueOf(geometry.locationType.name());
-        MapLiteGeocodingBounds viewport = new MapLiteGeocodingBounds();
-        viewport.northeast = new MapLiteGeocodingLatLng(geometry.viewport.northeast.lat,
-                geometry.viewport.northeast.lng);
-        viewport.southwest = new MapLiteGeocodingLatLng(geometry.viewport.southwest.lat,
-                geometry.viewport.southwest.lng);
-        mapLiteAddressGeometry.viewport = viewport;
+        if (geometry.bounds != null) {
+            MapLiteGeocodingBounds bounds = new MapLiteGeocodingBounds();
+            bounds.northeast = new MapLiteGeocodingLatLng(geometry.bounds.northeast.getLat(),
+                    geometry.bounds.northeast.getLon());
+            bounds.southwest = new MapLiteGeocodingLatLng(geometry.bounds.southwest.getLat(),
+                    geometry.bounds.southwest.getLon());
+            mapLiteAddressGeometry.bounds = bounds;
+        }
+        if (geometry.location != null) {
+            MapLiteGeocodingLatLng location = new MapLiteGeocodingLatLng(geometry.location.getLat(),
+                    geometry.location.getLon());
+            mapLiteAddressGeometry.location = location;
+        }
+        if (geometry.locationType != null) {
+            mapLiteAddressGeometry.locationType = MapLiteLocationType.valueOf(geometry.locationType.name());
+        }
+        if (geometry.viewport != null) {
+            MapLiteGeocodingBounds viewport = new MapLiteGeocodingBounds();
+            viewport.northeast = new MapLiteGeocodingLatLng(geometry.viewport.northeast.getLat(),
+                    geometry.viewport.northeast.getLon());
+            viewport.southwest = new MapLiteGeocodingLatLng(geometry.viewport.southwest.getLat(),
+                    geometry.viewport.southwest.getLon());
+            mapLiteAddressGeometry.viewport = viewport;
+        }
         return mapLiteAddressGeometry;
     }
 
-    private List<MapLiteGeocodingResult> convertGeoCodingresult(GeocodingResult[] results) {
+    private List<MapLiteGeocodingResult> convertGeoCodingresult(List<GCGeocodingResult> results) {
         List<MapLiteGeocodingResult> mapLiteGeocodingResults = Lists.<MapLiteGeocodingResult>newArrayList();
         MapLiteGeocodingResult mapLiteGeocodingResult;
         int count = 0;
-        for (GeocodingResult result : results) {
-            mapLiteGeocodingResult = new MapLiteGeocodingResult();
-            mapLiteGeocodingResult.addressComponents
-                    = converAddressComponent(result.addressComponents);
-            mapLiteGeocodingResult.formattedAddress = result.formattedAddress;
-            mapLiteGeocodingResult.geometry = this.convertGeometry(result.geometry);
-            mapLiteGeocodingResult.partialMatch = result.partialMatch;
-            mapLiteGeocodingResult.postcodeLocalities = result.postcodeLocalities;
-            mapLiteGeocodingResult.types = converAddressComponentType(result.types);
-            mapLiteGeocodingResults.add(mapLiteGeocodingResult);
-            if (++count == 5) {
-                break;
+        if (results != null) {
+            for (GCGeocodingResult result : results) {
+                mapLiteGeocodingResult = new MapLiteGeocodingResult();
+                if (result.addressComponents != null) {
+                    mapLiteGeocodingResult.addressComponents
+                            = converAddressComponent(result.addressComponents);
+                }
+                mapLiteGeocodingResult.formattedAddress = result.formattedAddress;
+                mapLiteGeocodingResult.geometry = this.convertGeometry(result.geometry);
+                mapLiteGeocodingResult.partialMatch = result.partialMatch;
+                mapLiteGeocodingResult.postcodeLocalities = result.postcodeLocalities;
+                if (result.types != null) {
+                    mapLiteGeocodingResult.types = converAddressType(result.types);
+                }
+                mapLiteGeocodingResults.add(mapLiteGeocodingResult);
+                if (++count == 5) {
+                    break;
+                }
+            }
+        }
+        return mapLiteGeocodingResults;
+    }
+
+    private List<MapLiteGeocodingResult> convertELGeoCodingresult(List<ELGeocodingBean> results) {
+        List<MapLiteGeocodingResult> mapLiteGeocodingResults = Lists.<MapLiteGeocodingResult>newArrayList();
+        MapLiteGeocodingResult mapLiteGeocodingResult;
+        int count = 0;
+        if (results != null) {
+            for (ELGeocodingBean result : results) {
+                mapLiteGeocodingResult = new MapLiteGeocodingResult();
+                mapLiteGeocodingResult.formattedAddress = result.getFormattedAddress();
+                mapLiteGeocodingResult.geometry = new MapLiteGeocodingGeometry();
+
+                //selectedItem.geometry.location
+                if (result.getGeometryLocation() != null) {
+                    mapLiteGeocodingResult.geometry.location
+                            = new MapLiteGeocodingLatLng(result.getGeometryLocation().getLat(),
+                                    result.getGeometryLocation().getLon());
+                }
+                //selectedItem.geometry.bounds
+                if (result.getBoundsNortheast() != null && result.getBoundsSouthwest() != null) {
+                    MapLiteGeocodingBounds bounds = new MapLiteGeocodingBounds();
+                    bounds.northeast = new MapLiteGeocodingLatLng(result.getBoundsNortheast().getLat(),
+                            result.getBoundsNortheast().getLon());
+                    bounds.southwest = new MapLiteGeocodingLatLng(result.getBoundsSouthwest().getLat(),
+                            result.getBoundsSouthwest().getLon());
+                    mapLiteGeocodingResult.geometry.bounds = bounds;
+                }
+                mapLiteGeocodingResults.add(mapLiteGeocodingResult);
+                if (++count == 5) {
+                    break;
+                }
             }
         }
         return mapLiteGeocodingResults;

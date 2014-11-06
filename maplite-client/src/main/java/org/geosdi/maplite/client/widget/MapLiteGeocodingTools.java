@@ -11,6 +11,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.dom.client.KeyCodes;
 import com.google.gwt.event.dom.client.KeyDownEvent;
 import com.google.gwt.event.dom.client.KeyDownHandler;
+import com.google.gwt.user.client.Timer;
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.TextBox;
@@ -96,41 +97,73 @@ public class MapLiteGeocodingTools {
 
         this.geocodingTextBox.setTitle("Search address");
         this.geocodingTextBox.getElement().setPropertyString("placeholder", "Insert the address to search...");
-        this.geocodingTextBox.addKeyDownHandler(
-                new KeyDownHandler() {
+        this.geocodingTextBox.addKeyDownHandler(new KeyDownHandler() {
 
-                    @Override
-                    public void onKeyDown(KeyDownEvent event
-                    ) {
-                        String addressToSearch = geocodingTextBox.getValue();
-                        if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER
+            private Timer suggestTimer;
+
+            @Override
+            public void onKeyDown(KeyDownEvent event) {
+                final String addressToSearch = geocodingTextBox.getValue();
+                if (event.getNativeKeyCode() == KeyCodes.KEY_ENTER
                         && GPSharedUtils.isNotEmpty(addressToSearch)) {
-                            MapLiteServiceRemote.Util.getInstance().executeGeoCoding(
-                                    addressToSearch, new AsyncCallback<List<MapLiteGeocodingResult>>() {
+                    if (suggestTimer != null) {
+                        suggestTimer.cancel();
+                    }
+                    MapLiteServiceRemote.Util.getInstance().executeGeocoding(
+                            addressToSearch, new AsyncCallback<List<MapLiteGeocodingResult>>() {
 
-                                        @Override
-                                        public void onFailure(Throwable caught) {
-                                            logger.warning("Error on retrieving geocode address: " + caught);
-                                        }
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    logger.warning("Error on retrieving geocode address: " + caught);
+                                }
 
-                                        @Override
-                                        public void onSuccess(List<MapLiteGeocodingResult> result) {
-                                            if (result != null) {
-                                                logger.finest("result ok: " + result.toString());
-                                                geocodingResults.clear();
-                                                geocodingListBox.clear();
-                                                geocodingResults.addAll(result);
-                                                for (MapLiteGeocodingResult singleresult : GPSharedUtils.safeList(result)) {
-                                                    geocodingListBox.addItem(singleresult.formattedAddress);
-                                                }
-                                                geocodingListBox.setVisibleItemCount(5);
-                                                geocodingListBox.setVisible(true);
-                                            }
-                                        }
-                                    });
+                                @Override
+                                public void onSuccess(List<MapLiteGeocodingResult> result) {
+                                    showAddresses(result);
+                                }
+                            });
+                } else if (GPSharedUtils.isNotEmpty(addressToSearch)
+                        && addressToSearch.length() > 2) {
+                    suggestTimer = new Timer() {
+                        @Override
+                        public void run() {
+                            MapLiteServiceRemote.Util.getInstance().suggestGeocoding(addressToSearch, new AsyncCallback<List<MapLiteGeocodingResult>>() {
+
+                                @Override
+                                public void onFailure(Throwable caught) {
+                                    logger.warning("Error on retrieving geocode address: " + caught);
+                                }
+
+                                @Override
+                                public void onSuccess(List<MapLiteGeocodingResult> result) {
+                                    showAddresses(result);
+                                }
+                            });
                         }
+                    };
+                    // Schedule the timer to run once in 1,5 seconds.
+                    suggestTimer.schedule(1500);
+                } else {
+                    if (suggestTimer != null) {
+                        suggestTimer.cancel();
                     }
                 }
+            }
+
+            private void showAddresses(List<MapLiteGeocodingResult> addresses) {
+                if (addresses != null) {
+                    logger.finest("Addresses received: " + addresses.toString());
+                    geocodingResults.clear();
+                    geocodingListBox.clear();
+                    geocodingResults.addAll(addresses);
+                    for (MapLiteGeocodingResult singleresult : GPSharedUtils.safeList(addresses)) {
+                        geocodingListBox.addItem(singleresult.formattedAddress);
+                    }
+                    geocodingListBox.setVisibleItemCount(5);
+                    geocodingListBox.setVisible(true);
+                }
+            }
+        }
         );
 
         VectorOptions vectorOption = new VectorOptions();

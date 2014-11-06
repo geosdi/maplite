@@ -52,4 +52,6 @@ public interface IMapLiteService {
 
     List<MapLiteGeocodingResult> executeGeocodign(String address,
             String language) throws MapLiteException;
+
+    List<MapLiteGeocodingResult> suggestGeocoding(String suggestText) throws MapLiteException;
 }

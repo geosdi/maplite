@@ -162,6 +162,7 @@
         <gwt-bootstrap-version>2.3.2.0</gwt-bootstrap-version>
         <!-- GWT needs at least java 1.5 -->
         <geoplatform-version>1.6-SNAPSHOT</geoplatform-version>
+        <geocoder-version>1.0-SNAPSHOT</geocoder-version>
         <geoserver-manager-version>1.6.x-enhanced</geoserver-manager-version>
         <guava-version>18.0</guava-version>
         <spring-version>4.1.0.RELEASE</spring-version>

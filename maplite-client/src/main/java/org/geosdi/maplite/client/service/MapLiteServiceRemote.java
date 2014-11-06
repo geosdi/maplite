@@ -66,6 +66,8 @@ public interface MapLiteServiceRemote extends RemoteService {
 
     GPClientProject loadProject(Long projectId, Long accountId) throws MapLiteException;
 
-    List<MapLiteGeocodingResult> executeGeoCoding(String address) throws MapLiteException;
+    List<MapLiteGeocodingResult> executeGeocoding(String address) throws MapLiteException;
+    
+    List<MapLiteGeocodingResult> suggestGeocoding(String suggestText) throws MapLiteException;
 
 }
