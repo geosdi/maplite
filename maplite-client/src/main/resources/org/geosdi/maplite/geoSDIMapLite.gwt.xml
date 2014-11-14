@@ -10,6 +10,7 @@
     <!-- ADDING GOOGLE-GUAVA MODULE -->
     <inherits name="com.google.common.collect.Collect"/>
     <inherits name='org.gwtopenmaps.openlayers.OpenLayers'/>
+    <inherits name='org.geosdi.geoplatform.gui.SharingClientServerModule'/>
     <inherits name='org.geosdi.maplite.MapLiteModel'/>
     
     <entry-point class='org.geosdi.maplite.client.GeoSDIMapLite'/>
@@ -35,9 +36,12 @@
     <set-property name="gwt.logging.systemHandler" value="ENABLED" />
     <set-property name="gwt.logging.consoleHandler" value="ENABLED"/> 
     <!-- Disable the firebug handler as an example -->
+    <define-property name="gwt.logging.firebugHandler" values="ENABLED, DISABLED"/>
     <set-property name="gwt.logging.firebugHandler" value="DISABLED" />
     <!-- Enable the simple remote handler -->
     <set-property name="gwt.logging.simpleRemoteHandler" value="DISABLED" />
+    
+    <define-property name="gwt.logging.popupHandler" values="ENABLED, DISABLED"/>
     <set-property name="gwt.logging.popupHandler" value="DISABLED" />
     <!--END Logging configuration-->
     
