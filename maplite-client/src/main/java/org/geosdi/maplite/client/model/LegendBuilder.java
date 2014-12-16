@@ -6,7 +6,10 @@
 package org.geosdi.maplite.client.model;
 
 import com.google.gwt.user.client.ui.Image;
+import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.logging.Logger;
+import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
 import org.geosdi.maplite.shared.ClientRasterInfo;
 import org.geosdi.maplite.shared.GPFolderClientInfo;
 import org.geosdi.maplite.shared.IGPFolderElements;
@@ -20,11 +23,13 @@ public class LegendBuilder {
 
     private static final String GET_LEGEND_REQUEST = "?REQUEST=GetLegendGraphic"
             + "&VERSION=1.0.0&FORMAT=image/png&LAYER=";
+    private final static Logger logger = Logger.getLogger("");
 
     private LegendBuilder() {
     }
 
-    public static Image generateLegendImage(ClientRasterInfo raster, Map map, boolean visible) {
+    public static VerticalPanel generateLegendImage(ClientRasterInfo raster, Map map, boolean visible) {
+        VerticalPanel legendImagePanel = new VerticalPanel();
         StringBuilder imageURL = new StringBuilder();
         imageURL.append(raster.getDataSource()).append(GET_LEGEND_REQUEST)
                 .append(raster.getLayerName()).append("&scale=").append(map.getScale())
@@ -33,8 +38,16 @@ public class LegendBuilder {
                 .append("&LEGEND_OPTIONS=forceRule:True;forceLabels=on");
 
         final Image legendImage = new Image(imageURL.toString());
-        legendImage.setVisible(visible);
-        return legendImage;
+        String layerName;
+        if(GPSharedUtils.isNotEmpty(raster.getAlias())){
+            layerName = raster.getAlias();
+        } else {
+            layerName = raster.getTitle();
+        }
+        legendImagePanel.add(new Label(layerName).asWidget());
+        legendImagePanel.add(legendImage);
+        legendImagePanel.setVisible(visible);
+        return legendImagePanel;
     }
 
     public static void rebuildLegend(java.util.Map<GPFolderClientInfo, VerticalPanel> legendPanels,

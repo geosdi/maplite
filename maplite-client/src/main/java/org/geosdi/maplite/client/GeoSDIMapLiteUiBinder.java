@@ -294,7 +294,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 map.addLayer(wmsLayer);
                 map.setLayerZIndex(wmsLayer, raster.getzIndex());
 
-                Image legendImage = LegendBuilder.generateLegendImage(raster, map,
+                VerticalPanel legendImage = LegendBuilder.generateLegendImage(raster, map,
                         tmpFolder.isChecked() ? raster.isChecked() : false);
                 tmpPanel.add(legendImage);
             }
