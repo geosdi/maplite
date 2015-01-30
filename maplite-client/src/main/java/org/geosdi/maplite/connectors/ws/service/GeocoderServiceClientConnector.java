@@ -42,4 +42,9 @@ public class GeocoderServiceClientConnector extends RestClientConnector<Geocoder
     public void setAddress(String theAddress) {
         this.address = theAddress;
     }
+
+    @Override
+    protected Class<?>[] getExtraClasses() {
+        return null;
+    }
 }
