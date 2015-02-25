@@ -36,6 +36,7 @@
 package org.geosdi.maplite.server.gwt;
 
 import java.util.List;
+import org.geosdi.maplite.client.model.EarthQuake;
 import org.geosdi.maplite.client.service.MapLiteServiceRemote;
 import org.geosdi.maplite.server.service.impl.MapLiteService;
 import org.geosdi.maplite.server.spring.GPAutoInjectingRemoteServiceServlet;
@@ -70,6 +71,11 @@ public class MapLiteRemoteImpl extends GPAutoInjectingRemoteServiceServlet
     @Override
     public List<MapLiteGeocodingResult> suggestGeocoding(String suggestText) throws MapLiteException {
         return this.mapLiteService.suggestGeocoding(suggestText);
+    }
+
+    @Override
+    public List<EarthQuake> readLatestEarthquakes() throws MapLiteException {
+        return this.mapLiteService.readLatestEarthquakes();
     }
 
 }

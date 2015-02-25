@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -28,10 +27,12 @@ import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
+import org.geosdi.maplite.client.map.EarlyWarningVector;
 import org.geosdi.maplite.client.model.BaseLayerBuilder;
 import org.geosdi.maplite.client.model.CoordinateReferenceSystem;
 import org.geosdi.maplite.client.model.LegendBuilder;
 import org.geosdi.maplite.client.model.MapLiteUrlRewriter;
+import org.geosdi.maplite.client.postStartup.PostStartupManagement;
 import org.geosdi.maplite.client.resources.UiMapLiteStyle;
 import org.geosdi.maplite.client.service.MapLiteServiceRemote;
 import org.geosdi.maplite.client.widget.MapLiteGeocodingTools;
@@ -230,6 +231,10 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 this.addFolderElementsToTheMap(Lists.<IGPFolderElements>newArrayList(folder));
             }
         }
+        //Initialize EarlyWarningVector vector
+        EarlyWarningVector earlyWarningVector = new EarlyWarningVector(this.map);
+        PostStartupManagement postStartupManagement = new PostStartupManagement(earlyWarningVector.get(), map);
+        postStartupManagement.elaboratePostParams();
     }
 
     private void addFolderElementsToTheMap(List<IGPFolderElements> folderElements) {

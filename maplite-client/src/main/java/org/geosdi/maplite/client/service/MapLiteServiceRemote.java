@@ -39,6 +39,7 @@ import com.google.gwt.core.client.GWT;
 import com.google.gwt.user.client.rpc.RemoteService;
 import com.google.gwt.user.client.rpc.RemoteServiceRelativePath;
 import java.util.List;
+import org.geosdi.maplite.client.model.EarthQuake;
 import org.geosdi.maplite.shared.GPClientProject;
 import org.geosdi.maplite.shared.MapLiteException;
 import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
@@ -69,5 +70,7 @@ public interface MapLiteServiceRemote extends RemoteService {
     List<MapLiteGeocodingResult> executeGeocoding(String address) throws MapLiteException;
     
     List<MapLiteGeocodingResult> suggestGeocoding(String suggestText) throws MapLiteException;
+    
+    List<EarthQuake> readLatestEarthquakes() throws MapLiteException;
 
 }

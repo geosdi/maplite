@@ -45,6 +45,25 @@ public class VectorFeatureStyle {
 
     private Style vectorStyle;
 
+    public static Style generateEarthquakePointStyle(double magnitude) {
+        Style style = new Style();
+        String color = "#FF0000";//red
+        style.setPointRadius(magnitude);
+        if (magnitude <= 3) {
+            color = "#66CD00";//green
+        } else if (magnitude > 3) {
+            color = "#FFA500";//orange
+        }
+        style.setFillColor(color);
+        style.setStrokeColor(color);
+        style.setStrokeWidth(2);
+        style.setGraphicOpacity(1);
+        style.setLabelSelect(false);
+        style.setFontWeight("normal");
+//        style.setGraphicSize(25, 41);
+        return style;
+    }
+
     public static Style generateGeocodingStyle() {
         Style style = new Style();
         String color = "#FF0000";

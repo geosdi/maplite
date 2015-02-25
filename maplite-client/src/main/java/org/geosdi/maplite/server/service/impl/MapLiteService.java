@@ -35,17 +35,25 @@
  */
 package org.geosdi.maplite.server.service.impl;
 
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.collect.Lists;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
+import org.geojson.Feature;
+import org.geosdi.ewf.model.EWFFeatureCollection;
 import org.geosdi.geocoder.model.GCAddressComponent;
 import org.geosdi.geocoder.model.GCAddressComponentType;
 import org.geosdi.geocoder.model.GCAddressType;
@@ -64,6 +72,8 @@ import org.geosdi.geoplatform.response.RasterLayerDTO;
 import org.geosdi.geoplatform.response.ShortLayerDTO;
 import org.geosdi.geoplatform.services.GeoPlatformService;
 import org.geosdi.geoplatform.services.GeocoderRestService;
+import org.geosdi.maplite.client.map.GPLonLat;
+import org.geosdi.maplite.client.model.EarthQuake;
 import org.geosdi.maplite.server.service.IMapLiteService;
 import org.geosdi.maplite.shared.BBoxClientInfo;
 import org.geosdi.maplite.shared.ClientRasterInfo;
@@ -83,6 +93,7 @@ import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
 import org.geosdi.maplite.shared.geocoding.MapLiteLocationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 
 /**
@@ -90,7 +101,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
  * @email nazzareno.sileno@geosdi.org
  */
 @Service("mapLiteService")
-public class MapLiteService implements IMapLiteService {
+public class MapLiteService implements IMapLiteService, InitializingBean {
 
     protected static final Logger logger = LoggerFactory.getLogger(
             MapLiteService.class);
@@ -103,6 +114,8 @@ public class MapLiteService implements IMapLiteService {
     private GeocoderRestService geocoderRestClient;
 
     private GeoServerRESTReader sharedRestReader;
+
+    private final ObjectMapper mapper = new ObjectMapper();
 
     /**
      * @param geoPlatformServiceClient the geoPlatformServiceClient to set
@@ -428,6 +441,71 @@ public class MapLiteService implements IMapLiteService {
             throw new MapLiteException("Unable to find the requested projct: " + rnf);
         }
         return this.convertToGPClientProject(projectDTO, accountProject.getBaseLayer());
+    }
+
+    @Override
+    public List<EarthQuake> readLatestEarthquakes() throws MapLiteException {
+        List<EarthQuake> earthQuakes = Lists.<EarthQuake>newArrayList();
+        EWFFeatureCollection featureCollection = null;
+        try {
+            URL lastDayEarthquakes = new URL("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson");
+            featureCollection
+                    = this.mapper.readValue(lastDayEarthquakes, EWFFeatureCollection.class);
+        } catch (MalformedURLException ex) {
+            logger.error("Error in earthquake URL: " + ex);
+            throw new MapLiteException("Error in earthquake URL: " + ex);
+        } catch (IOException ex) {
+            logger.error("Error in earthquake URL: " + ex);
+            throw new MapLiteException("Error in earthquake URL: " + ex);
+        }
+
+        if (featureCollection != null && featureCollection.getFeatures() != null) {
+            SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy – HH:mm:ss");
+            for (Feature feature : featureCollection) {
+                logger.debug("Feature: " + feature.toString());
+                EarthQuake earthQuake = new EarthQuake();
+                earthQuake.setBbox(feature.getBbox());
+
+                Double longitude = feature.getGeometry().getProperty("longitude");
+                Double latitude = feature.getGeometry().getProperty("latitude");
+
+//                logger.info("Geometry properties: " + feature.getGeometry().getProperties());
+//                logger.info("feature.getGeometry(): " + feature.getGeometry());
+//                logger.info("feature.getProperties(): " + feature.getProperties());
+//                logger.info("longitude: " + feature.getGeometry().getProperty("longitude"));
+//                logger.info("latitude: " + feature.getGeometry().getProperty("latitude"));
+                if (longitude == null || latitude == null) {
+                    String geometryString = feature.getGeometry().toString();
+                    int longitudeIndex = geometryString.indexOf("longitude=");
+                    int longitudeCommaIndex = geometryString.indexOf(",", longitudeIndex + 10);
+                    int latitudeIndex = geometryString.indexOf("latitude=");
+                    int latitudeCommaIndex = geometryString.indexOf(",", latitudeIndex + 9);
+                    if (longitudeIndex != -1 && latitudeIndex != -1) {
+                        String longString = geometryString.substring(longitudeIndex + 10, longitudeCommaIndex);
+                        String latString = geometryString.substring(latitudeIndex + 9, latitudeCommaIndex);
+                        longitude = Double.parseDouble(longString);
+                        latitude = Double.parseDouble(latString);
+                        logger.debug("Trovato lat ton: " + longString + " - " + latString);
+                        earthQuake.setCoordinates(new GPLonLat(longitude, latitude));
+                    }
+                } else {
+                    earthQuake.setCoordinates(new GPLonLat(longitude, latitude));
+                }
+
+                earthQuake.setMagnitude((Double) feature.getProperty("mag"));
+                earthQuake.setPlace((String) feature.getProperty("place"));
+                Date date = new Date((Long) feature.getProperty("time"));
+                earthQuake.setEarthquakeDate(date);
+                earthQuake.setFormattedDate(sdf.format(date));
+                earthQuakes.add(earthQuake);
+            }
+        }
+        return earthQuakes;
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        mapper.disable(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES);
     }
 
 }

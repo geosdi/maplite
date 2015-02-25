@@ -37,6 +37,7 @@ package org.geosdi.maplite.server.service;
 
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.geosdi.maplite.client.model.EarthQuake;
 import org.geosdi.maplite.shared.GPClientProject;
 import org.geosdi.maplite.shared.MapLiteException;
 import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
@@ -54,4 +55,6 @@ public interface IMapLiteService {
             String language) throws MapLiteException;
 
     List<MapLiteGeocodingResult> suggestGeocoding(String suggestText) throws MapLiteException;
+
+    List<EarthQuake> readLatestEarthquakes() throws MapLiteException;
 }

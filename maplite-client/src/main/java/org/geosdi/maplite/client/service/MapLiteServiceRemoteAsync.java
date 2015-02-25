@@ -37,6 +37,7 @@ package org.geosdi.maplite.client.service;
 
 import com.google.gwt.user.client.rpc.AsyncCallback;
 import java.util.List;
+import org.geosdi.maplite.client.model.EarthQuake;
 import org.geosdi.maplite.shared.GPClientProject;
 import org.geosdi.maplite.shared.MapLiteException;
 import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
@@ -54,5 +55,8 @@ public interface MapLiteServiceRemoteAsync {
             throws MapLiteException;
 
     void suggestGeocoding(String suggestText, AsyncCallback<List<MapLiteGeocodingResult>> callBack)
+            throws MapLiteException;
+
+    void readLatestEarthquakes(AsyncCallback<List<EarthQuake>> callBack)
             throws MapLiteException;
 }
