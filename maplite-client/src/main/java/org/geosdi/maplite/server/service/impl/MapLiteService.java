@@ -448,7 +448,7 @@ public class MapLiteService implements IMapLiteService, InitializingBean {
         List<EarthQuake> earthQuakes = Lists.<EarthQuake>newArrayList();
         EWFFeatureCollection featureCollection = null;
         try {
-            URL lastDayEarthquakes = new URL("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson");
+            URL lastDayEarthquakes = new URL("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson");
             featureCollection
                     = this.mapper.readValue(lastDayEarthquakes, EWFFeatureCollection.class);
         } catch (MalformedURLException ex) {
@@ -462,18 +462,18 @@ public class MapLiteService implements IMapLiteService, InitializingBean {
         if (featureCollection != null && featureCollection.getFeatures() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy – HH:mm:ss");
             for (Feature feature : featureCollection) {
-                logger.debug("Feature: " + feature.toString());
+                logger.info("Feature: " + feature.toString());
                 EarthQuake earthQuake = new EarthQuake();
                 earthQuake.setBbox(feature.getBbox());
 
                 Double longitude = feature.getGeometry().getProperty("longitude");
                 Double latitude = feature.getGeometry().getProperty("latitude");
 
-//                logger.info("Geometry properties: " + feature.getGeometry().getProperties());
-//                logger.info("feature.getGeometry(): " + feature.getGeometry());
-//                logger.info("feature.getProperties(): " + feature.getProperties());
-//                logger.info("longitude: " + feature.getGeometry().getProperty("longitude"));
-//                logger.info("latitude: " + feature.getGeometry().getProperty("latitude"));
+                logger.info("Geometry properties: " + feature.getGeometry().getProperties());
+                logger.info("feature.getGeometry(): " + feature.getGeometry());
+                logger.info("feature.getProperties(): " + feature.getProperties());
+                logger.info("longitude: " + feature.getGeometry().getProperty("longitude"));
+                logger.info("latitude: " + feature.getGeometry().getProperty("latitude"));
                 if (longitude == null || latitude == null) {
                     String geometryString = feature.getGeometry().toString();
                     int longitudeIndex = geometryString.indexOf("longitude=");
@@ -485,7 +485,7 @@ public class MapLiteService implements IMapLiteService, InitializingBean {
                         String latString = geometryString.substring(latitudeIndex + 9, latitudeCommaIndex);
                         longitude = Double.parseDouble(longString);
                         latitude = Double.parseDouble(latString);
-                        logger.debug("Trovato lat ton: " + longString + " - " + latString);
+                        logger.info("Trovato lat ton: " + longString + " - " + latString);
                         earthQuake.setCoordinates(new GPLonLat(longitude, latitude));
                     }
                 } else {
