@@ -448,7 +448,7 @@ public class MapLiteService implements IMapLiteService, InitializingBean {
         List<EarthQuake> earthQuakes = Lists.<EarthQuake>newArrayList();
         EWFFeatureCollection featureCollection = null;
         try {
-            URL lastDayEarthquakes = new URL("https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson");
+            URL lastDayEarthquakes = new URL("http://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/2.5_day.geojson");
             featureCollection
                     = this.mapper.readValue(lastDayEarthquakes, EWFFeatureCollection.class);
         } catch (MalformedURLException ex) {
