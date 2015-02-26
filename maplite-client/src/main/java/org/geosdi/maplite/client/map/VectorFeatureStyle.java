@@ -49,9 +49,9 @@ public class VectorFeatureStyle {
         Style style = new Style();
         String color = "#FF0000";//red
         style.setPointRadius(magnitude + 2);
-        if (magnitude <= 3) {
+        if (magnitude < 3) {
             color = "#66CD00";//green
-        } else if (magnitude > 3 && magnitude < 5) {
+        } else if (magnitude >= 3 && magnitude < 5) {
             color = "#FFA500";//orange
         }
         style.setFillColor(color);

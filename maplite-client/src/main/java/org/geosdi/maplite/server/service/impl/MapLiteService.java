@@ -485,7 +485,7 @@ public class MapLiteService implements IMapLiteService, InitializingBean {
                         String latString = geometryString.substring(latitudeIndex + 9, latitudeCommaIndex);
                         longitude = Double.parseDouble(longString);
                         latitude = Double.parseDouble(latString);
-                        logger.info("Trovato lat ton: " + longString + " - " + latString);
+                        logger.debug("Trovato lat lon: " + longString + " - " + latString);
                         earthQuake.setCoordinates(new GPLonLat(longitude, latitude));
                     }
                 } else {
