@@ -492,7 +492,8 @@ public class MapLiteService implements IMapLiteService, InitializingBean {
                     earthQuake.setCoordinates(new GPLonLat(longitude, latitude));
                 }
 
-                earthQuake.setMagnitude((Double) feature.getProperty("mag"));
+                Number magnitudo = feature.getProperty("mag");
+                earthQuake.setMagnitude(magnitudo.doubleValue());
                 earthQuake.setPlace((String) feature.getProperty("place"));
                 Date date = new Date((Long) feature.getProperty("time"));
                 earthQuake.setEarthquakeDate(date);
