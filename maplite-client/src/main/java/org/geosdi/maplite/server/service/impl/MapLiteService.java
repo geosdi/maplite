@@ -462,18 +462,18 @@ public class MapLiteService implements IMapLiteService, InitializingBean {
         if (featureCollection != null && featureCollection.getFeatures() != null) {
             SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy – HH:mm:ss");
             for (Feature feature : featureCollection) {
-                logger.info("Feature: " + feature.toString());
+                logger.debug("Feature: " + feature.toString());
                 EarthQuake earthQuake = new EarthQuake();
                 earthQuake.setBbox(feature.getBbox());
 
                 Double longitude = feature.getGeometry().getProperty("longitude");
                 Double latitude = feature.getGeometry().getProperty("latitude");
 
-                logger.info("Geometry properties: " + feature.getGeometry().getProperties());
-                logger.info("feature.getGeometry(): " + feature.getGeometry());
-                logger.info("feature.getProperties(): " + feature.getProperties());
-                logger.info("longitude: " + feature.getGeometry().getProperty("longitude"));
-                logger.info("latitude: " + feature.getGeometry().getProperty("latitude"));
+//                logger.info("Geometry properties: " + feature.getGeometry().getProperties());
+//                logger.info("feature.getGeometry(): " + feature.getGeometry());
+//                logger.info("feature.getProperties(): " + feature.getProperties());
+//                logger.info("longitude: " + feature.getGeometry().getProperty("longitude"));
+//                logger.info("latitude: " + feature.getGeometry().getProperty("latitude"));
                 if (longitude == null || latitude == null) {
                     String geometryString = feature.getGeometry().toString();
                     int longitudeIndex = geometryString.indexOf("longitude=");
