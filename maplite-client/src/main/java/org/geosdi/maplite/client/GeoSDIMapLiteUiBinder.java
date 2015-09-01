@@ -287,12 +287,14 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 wmsLayer.setZIndex(raster.getzIndex());
                 logger.log(Level.INFO, "Z-Index value: " + wmsLayer.getZIndex());
                 wmsLayer.setIsVisible(tmpFolder.isChecked() ? raster.isChecked() : false);
-
+                
                 //Adds getFeatureInfo
                 this.getFeatureInfoTool.addGetFeatureInfoToWMS(wmsLayer);
 
                 map.addLayer(wmsLayer);
                 map.setLayerZIndex(wmsLayer, raster.getzIndex());
+                //Add another property to the raster to retrieve easly the layer on map
+                raster.setWMSLayerId(wmsLayer.getId());
 
                 VerticalPanel legendImage = LegendBuilder.generateLegendImage(raster, map,
                         tmpFolder.isChecked() ? raster.isChecked() : false);
@@ -314,14 +316,12 @@ public class GeoSDIMapLiteUiBinder extends Composite {
             }
         } else {
             ClientRasterInfo raster = (ClientRasterInfo) folderElement;
+            String layerId = raster.getWmsLayerId();
             String layerName = raster.getLayerName();
-            Layer[] layers = map.getLayersByName(layerName);
-            if (layers != null) {
-                for (Layer layer : layers) {
-                    if (layer.getName().equalsIgnoreCase(layerName)) {
-                        layer.setIsVisible(visible ? raster.isChecked() : false);
-                        break;
-                    }
+            Layer layer = map.getLayer(layerId);
+            if (layer != null) {
+                if (layer.getName().equalsIgnoreCase(layerName)) {
+                    layer.setIsVisible(visible ? raster.isChecked() : false);
                 }
             }
         }

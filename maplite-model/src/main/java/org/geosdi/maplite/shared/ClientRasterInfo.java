@@ -51,7 +51,16 @@ public class ClientRasterInfo extends GPLayerClientInfo {
     private Float maxScale;
     private Float minScale;
     private ArrayList<GPStyleStringBeanModel> styles;
+    private String wmsLayerId;
+    
+    public void setWMSLayerId(String wmsLayerId) {
+        this.wmsLayerId = wmsLayerId;
+    }
 
+    public String getWmsLayerId() {
+        return wmsLayerId;
+    }
+    
     /**
      * @return the styles
      */
