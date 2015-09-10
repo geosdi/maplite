@@ -34,6 +34,13 @@
             <version>${gwtVersion}</version>
             <!--<scope>provided</scope>-->
         </dependency>
+
+        <dependency>
+            <groupId>com.google.gwt</groupId>
+            <artifactId>gwt-dev</artifactId>
+            <version>${gwtVersion}</version>
+            <scope>runtime</scope>
+        </dependency>
         
         <dependency>
             <groupId>javax.validation</groupId>
@@ -213,7 +220,7 @@
                     </compileSourcesArtifacts>
                     <runTarget>geoSDIMapLite.html</runTarget>
                     <hostedWebapp>${webappDirectory}</hostedWebapp>
-<!--                    <additionalSources>${webappDirectory}</additionalSources>
+                    <!--                    <additionalSources>${webappDirectory}</additionalSources>
                     <additionalSources>src/main/java,target/generated-sources</additionalSources>-->
                 </configuration>
             </plugin>
@@ -289,7 +296,7 @@
                 </configuration>
             </plugin>
             
-<!--            <plugin>
+            <!--            <plugin>
                 <groupId>org.ninjaframework</groupId>
                 <artifactId>ninja-maven-plugin</artifactId>
                 <version>4.0.0</version>
