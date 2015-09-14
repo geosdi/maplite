@@ -42,9 +42,6 @@ public class LegendBuilder {
             + "&VERSION=1.0.0&FORMAT=image/png&LAYER=";
     private final static Logger logger = Logger.getLogger("");
 
-    private static DialogBox cqlDialogBox;
-    private static DialogBox refreshDialogBox;
-
     private LegendBuilder() {
     }
 
@@ -131,160 +128,158 @@ public class LegendBuilder {
     }
 
     private static DialogBox getRefreshDialogBox(final ClientRasterInfo raster, final Map map) {
-        if (refreshDialogBox == null) {
-            // Create a dialog box and set the caption text
-            refreshDialogBox = new DialogBox();
-            refreshDialogBox.ensureDebugId("cwDialogBox");
-            refreshDialogBox.setText("REFRESH TIME");
+        // Create a dialog box and set the caption text
+        final DialogBox refreshDialogBox = new DialogBox();
+        refreshDialogBox.ensureDebugId("cwDialogBox");
+        refreshDialogBox.setText("REFRESH TIME");
 
-            // Create a table to layout the content
-            VerticalPanel dialogContents = new VerticalPanel();
-            dialogContents.setSpacing(4);
-            refreshDialogBox.setWidget(dialogContents);
+        // Create a table to layout the content
+        VerticalPanel dialogContents = new VerticalPanel();
+        dialogContents.setSpacing(4);
+        refreshDialogBox.setWidget(dialogContents);
 
-            // Add some text to the top of the dialog
-            HTML details = new HTML("seconds");
-            dialogContents.add(details);
-            dialogContents.setCellHorizontalAlignment(
-                    details, HasHorizontalAlignment.ALIGN_CENTER);
+        // Add some text to the top of the dialog
+        HTML details = new HTML("seconds");
+        dialogContents.add(details);
+        dialogContents.setCellHorizontalAlignment(
+                details, HasHorizontalAlignment.ALIGN_CENTER);
 
-            final TextBox normalText = new TextBox();
-            normalText.ensureDebugId("cwBasicText-textbox");
+        final TextBox normalText = new TextBox();
+        normalText.ensureDebugId("cwBasicText-textbox");
             // Set the normal text box to automatically adjust its direction according
-            // to the input text. Use the Any-RTL heuristic, which sets an RTL direction
-            // iff the text contains at least one RTL character.
-            normalText.setDirectionEstimator(AnyRtlDirectionEstimator.get());
+        // to the input text. Use the Any-RTL heuristic, which sets an RTL direction
+        // iff the text contains at least one RTL character.
+        normalText.setDirectionEstimator(AnyRtlDirectionEstimator.get());
 
-            dialogContents.add(normalText);
-            dialogContents.setCellHorizontalAlignment(
-                    normalText, HasHorizontalAlignment.ALIGN_CENTER);
+        dialogContents.add(normalText);
+        dialogContents.setCellHorizontalAlignment(
+                normalText, HasHorizontalAlignment.ALIGN_CENTER);
 
-            // Add a close button at the bottom of the dialog
-            Button closeButton = new Button(
-                    "Apply", new ClickHandler() {
+        // Add a close button at the bottom of the dialog
+        Button closeButton = new Button(
+                "Apply", new ClickHandler() {
 
-                        private java.util.Map<ClientRasterInfo, Timer> timerMap = Maps.<ClientRasterInfo, Timer>newHashMap();
+                    private java.util.Map<ClientRasterInfo, Timer> timerMap = Maps.<ClientRasterInfo, Timer>newHashMap();
 
-                        @Override
-                        public void onClick(ClickEvent event) {
-                            String value = normalText.getValue();
-                            try {
-                                int seconds = Integer.parseInt(value);
-                                if (seconds != 0 && seconds < 30) {
-                                    Window.alert("The time must be greater or equal to 30 seconds");
-                                } else {
-                                    Layer layer = map.getLayer(raster.getWmsLayerId());
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        String value = normalText.getValue();
+                        try {
+                            int seconds = Integer.parseInt(value);
+                            if (seconds != 0 && seconds < 30) {
+                                Window.alert("The time must be greater or equal to 30 seconds");
+                            } else {
+                                Layer layer = map.getLayer(raster.getWmsLayerId());
 
-                                    final WMS wms = WMS.narrowToLayer(layer.getJSObject());
-                                    Timer timer = timerMap.get(raster);
-                                    if (timer == null) {
-                                        timer = new Timer() {
+                                final WMS wms = WMS.narrowToLayer(layer.getJSObject());
+                                Timer timer = timerMap.get(raster);
+                                if (timer == null) {
+                                    timer = new Timer() {
 
-                                            @Override
-                                            public void run() {
-                                                logger.info("Repeat scheduling");
-                                                wms.redraw(true);
-                                            }
-                                        };
-                                        timerMap.put(raster, timer);
-                                    }
-                                    if (seconds == 0) {
-                                        timer.cancel();
-                                    } else {
-                                        timer.scheduleRepeating(seconds * 1000);
-                                    }
-                                    refreshDialogBox.hide();
+                                        @Override
+                                        public void run() {
+                                            logger.info("Repeat scheduling");
+                                            wms.redraw(true);
+                                        }
+                                    };
+                                    timerMap.put(raster, timer);
                                 }
-                            } catch (NumberFormatException nfe) {
-                                Window.alert("The passed value is not a valid integer number");
+                                if (seconds == 0) {
+                                    timer.cancel();
+                                } else {
+                                    timer.scheduleRepeating(seconds * 1000);
+                                }
+                                refreshDialogBox.hide();
                             }
+                        } catch (NumberFormatException nfe) {
+                            Window.alert("The passed value is not a valid integer number");
                         }
-                    });
-            dialogContents.add(closeButton);
-            if (LocaleInfo.getCurrentLocale().isRTL()) {
-                dialogContents.setCellHorizontalAlignment(
-                        closeButton, HasHorizontalAlignment.ALIGN_LEFT);
+                    }
+                });
+        dialogContents.add(closeButton);
+        if (LocaleInfo.getCurrentLocale().isRTL()) {
+            dialogContents.setCellHorizontalAlignment(
+                    closeButton, HasHorizontalAlignment.ALIGN_LEFT);
 
-            } else {
-                dialogContents.setCellHorizontalAlignment(
-                        closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
-            }
-
-            // Return the dialog box
-            refreshDialogBox.setGlassEnabled(true);
-            refreshDialogBox.setAnimationEnabled(true);
-            refreshDialogBox.center();
+        } else {
+            dialogContents.setCellHorizontalAlignment(
+                    closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
         }
+
+        // Return the dialog box
+        refreshDialogBox.setGlassEnabled(true);
+        refreshDialogBox.setAnimationEnabled(true);
+        refreshDialogBox.center();
         return refreshDialogBox;
     }
 
     private static DialogBox getCQLDialogBox(final ClientRasterInfo raster, final Map map) {
-        if (cqlDialogBox == null) {
-            // Create a dialog box and set the caption text
-            cqlDialogBox = new DialogBox();
-            cqlDialogBox.ensureDebugId("cwDialogBox");
-            cqlDialogBox.setText("FILTER");
+        // Create a dialog box and set the caption text
+        final DialogBox cqlDialogBox = new DialogBox();
+        cqlDialogBox.ensureDebugId("cwDialogBox");
+        cqlDialogBox.setText("FILTER");
 
-            // Create a table to layout the content
-            VerticalPanel dialogContents = new VerticalPanel();
-            dialogContents.setSpacing(4);
-            cqlDialogBox.setWidget(dialogContents);
+        // Create a table to layout the content
+        VerticalPanel dialogContents = new VerticalPanel();
+        dialogContents.setSpacing(4);
+        cqlDialogBox.setWidget(dialogContents);
 
-            // Add some text to the top of the dialog
-            HTML details = new HTML("CQL Filter");
-            dialogContents.add(details);
-            dialogContents.setCellHorizontalAlignment(
-                    details, HasHorizontalAlignment.ALIGN_CENTER);
+        // Add some text to the top of the dialog
+        HTML details = new HTML("CQL Filter");
+        dialogContents.add(details);
+        dialogContents.setCellHorizontalAlignment(
+                details, HasHorizontalAlignment.ALIGN_CENTER);
 
-            // Add a text area
-            final TextArea textArea = new TextArea();
-            textArea.ensureDebugId("cwBasicText-textarea");
-            textArea.setVisibleLines(5);
+        // Add a text area
+        final TextArea textArea = new TextArea();
+        textArea.ensureDebugId("cwBasicText-textarea");
+        textArea.setVisibleLines(5);
 
-            if (GPSharedUtils.isNotEmpty(raster.getCqlFilter())) {
-                textArea.setText(raster.getCqlFilter());
-            }
-
-            dialogContents.add(textArea);
-            dialogContents.setCellHorizontalAlignment(
-                    textArea, HasHorizontalAlignment.ALIGN_CENTER);
-
-            // Add a close button at the bottom of the dialog
-            Button closeButton = new Button(
-                    "Apply", new ClickHandler() {
-                        @Override
-                        public void onClick(ClickEvent event) {
-                            raster.setCqlFilter(textArea.getText());
-                            Layer layer = map.getLayer(raster.getWmsLayerId());
-                            WMS wms = WMS.narrowToLayer(layer.getJSObject());
-                            WMSParams params;
-                            if (raster.getCqlFilter() == null
-                            || raster.getCqlFilter().trim().equals("")) {
-                                params = wms.getParams();
-                                params.removeCQLFilter();
-                            } else {
-                                params = new WMSParams();
-                                params.setCQLFilter(raster.getCqlFilter());
-                            }
-                            wms.mergeNewParams(params);
-                            cqlDialogBox.hide();
-                        }
-                    });
-            dialogContents.add(closeButton);
-            if (LocaleInfo.getCurrentLocale().isRTL()) {
-                dialogContents.setCellHorizontalAlignment(
-                        closeButton, HasHorizontalAlignment.ALIGN_LEFT);
-
-            } else {
-                dialogContents.setCellHorizontalAlignment(
-                        closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
-            }
-
-            // Return the dialog box
-            cqlDialogBox.setGlassEnabled(true);
-            cqlDialogBox.setAnimationEnabled(true);
-            cqlDialogBox.center();
+        if (GPSharedUtils.isNotEmpty(raster.getCqlFilter())) {
+            textArea.setText(raster.getCqlFilter());
         }
+
+        dialogContents.add(textArea);
+        dialogContents.setCellHorizontalAlignment(
+                textArea, HasHorizontalAlignment.ALIGN_CENTER);
+
+        // Add a close button at the bottom of the dialog
+        Button closeButton = new Button(
+                "Apply", new ClickHandler() {
+                    @Override
+                    public void onClick(ClickEvent event) {
+                        logger.info("Applico cql filter su raster: " + raster.getLayerName());
+                        raster.setCqlFilter(textArea.getText());
+                        Layer layer = map.getLayer(raster.getWmsLayerId());
+                        WMS wms = WMS.narrowToLayer(layer.getJSObject());
+                        WMSParams params;
+                        if (raster.getCqlFilter() == null
+                        || raster.getCqlFilter().trim().equals("")) {
+                            params = wms.getParams();
+                            params.removeCQLFilter();
+                        } else {
+                            params = new WMSParams();
+                            params.setCQLFilter(raster.getCqlFilter());
+                        }
+                        logger.info("Filtro CQL: " + raster.getCqlFilter());
+                        wms.mergeNewParams(params);
+                        cqlDialogBox.hide();
+                    }
+                });
+        dialogContents.add(closeButton);
+        if (LocaleInfo.getCurrentLocale().isRTL()) {
+            dialogContents.setCellHorizontalAlignment(
+                    closeButton, HasHorizontalAlignment.ALIGN_LEFT);
+
+        } else {
+            dialogContents.setCellHorizontalAlignment(
+                    closeButton, HasHorizontalAlignment.ALIGN_RIGHT);
+        }
+
+        // Return the dialog box
+        cqlDialogBox.setGlassEnabled(true);
+        cqlDialogBox.setAnimationEnabled(true);
+        cqlDialogBox.center();
         return cqlDialogBox;
     }
 
