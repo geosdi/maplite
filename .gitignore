@@ -1,4 +1,5 @@
 /target/
+.settings/
 /maplite-model/target/
 /maplite-client/target/
 /maplite-client/.settings/

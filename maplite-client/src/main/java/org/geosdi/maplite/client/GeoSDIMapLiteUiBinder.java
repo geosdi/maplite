@@ -17,7 +17,6 @@ import com.google.gwt.user.client.ui.CheckBox;
 import com.google.gwt.user.client.ui.Composite;
 import com.google.gwt.user.client.ui.HTML;
 import com.google.gwt.user.client.ui.HTMLPanel;
-import com.google.gwt.user.client.ui.Image;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -287,7 +286,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                 wmsLayer.setZIndex(raster.getzIndex());
                 logger.log(Level.INFO, "Z-Index value: " + wmsLayer.getZIndex());
                 wmsLayer.setIsVisible(tmpFolder.isChecked() ? raster.isChecked() : false);
-                
+
                 //Adds getFeatureInfo
                 this.getFeatureInfoTool.addGetFeatureInfoToWMS(wmsLayer);
 
