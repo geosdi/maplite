@@ -301,7 +301,7 @@ input[type='checkbox']:checked:after {
 
 .olControlScaleLine {
     left: 10px!important;
-    bottom:28px!important;
+    bottom:50px!important;
     font-size: xx-small;
     color: rgba(0, 60, 136, 0.7)!important;
     padding: 4px;
@@ -339,7 +339,7 @@ input[type='checkbox']:checked:after {
 
 .olControlMousePosition{
     left: 10px!important;
-    bottom: 3px!important;
+    bottom: 25px!important;
     font-size: xx-small;
     padding: 4px;
     width: 150px;
