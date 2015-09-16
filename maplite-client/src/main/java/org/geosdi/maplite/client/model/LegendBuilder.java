@@ -8,6 +8,10 @@ package org.geosdi.maplite.client.model;
 import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.event.dom.client.ErrorEvent;
+import com.google.gwt.event.dom.client.ErrorHandler;
+import com.google.gwt.event.dom.client.LoadEvent;
+import com.google.gwt.event.dom.client.LoadHandler;
 import com.google.gwt.i18n.client.LocaleInfo;
 import com.google.gwt.i18n.shared.AnyRtlDirectionEstimator;
 import com.google.gwt.user.client.Timer;
@@ -46,8 +50,8 @@ public class LegendBuilder {
     }
 
     public static VerticalPanel generateLegendImage(final ClientRasterInfo raster,
-            final Map map, boolean visible) {
-        VerticalPanel legendImagePanel = new VerticalPanel();
+            final Map map, final boolean visible) {
+        final VerticalPanel legendImagePanel = new VerticalPanel();
         StringBuilder imageURL = new StringBuilder();
         imageURL.append(raster.getDataSource()).append(GET_LEGEND_REQUEST)
                 .append(raster.getLayerName()).append("&scale=").append(map.getScale())
@@ -56,22 +60,23 @@ public class LegendBuilder {
                 .append("&LEGEND_OPTIONS=forceRule:True;forceLabels=on");
 
         final Image legendImage = new Image(imageURL.toString());
-//        legendImage.addLoadHandler(new LoadHandler() {
-//
-//            @Override
-//            public void onLoad(LoadEvent event) {
-//                logger.info("addLoadHandler: " + event);
-//            }
-//        });
-//        legendImage.addErrorHandler(new ErrorHandler() {
-//
-//            @Override
-//            public void onError(ErrorEvent event) {
-//                legendImage.removeFromParent();
-//                logger.info("onError: " + event);
-//                logger.info("onError: " + event.toDebugString());
-//            }
-//        });
+        legendImage.addLoadHandler(new LoadHandler() {
+
+            @Override
+            public void onLoad(LoadEvent event) {
+                logger.info("addLoadHandler: " + event);
+                legendImagePanel.setVisible(visible);
+            }
+        });
+        legendImage.addErrorHandler(new ErrorHandler() {
+
+            @Override
+            public void onError(ErrorEvent event) {
+                logger.info("onError: " + event);
+                logger.info("onError: " + event.toDebugString());
+                legendImagePanel.setVisible(false);
+            }
+        });
         String layerName;
         if (GPSharedUtils.isNotEmpty(raster.getAlias())) {
             layerName = raster.getAlias();
@@ -146,7 +151,7 @@ public class LegendBuilder {
 
         final TextBox normalText = new TextBox();
         normalText.ensureDebugId("cwBasicText-textbox");
-            // Set the normal text box to automatically adjust its direction according
+        // Set the normal text box to automatically adjust its direction according
         // to the input text. Use the Any-RTL heuristic, which sets an RTL direction
         // iff the text contains at least one RTL character.
         normalText.setDirectionEstimator(AnyRtlDirectionEstimator.get());
