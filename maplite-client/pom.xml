@@ -190,7 +190,7 @@
         <outputDirectory>${webappDirectory}/WEB-INF/classes</outputDirectory>
         
         <plugins>
-            
+                       
             <!-- GWT Maven Plugin -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>

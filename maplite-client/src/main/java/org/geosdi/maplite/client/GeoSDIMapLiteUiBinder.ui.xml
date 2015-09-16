@@ -56,15 +56,3 @@
     </g:LayoutPanel>
 
 </ui:UiBinder>
-
-<!--<g:AbsolutePanel ui:field="mapPanel"/>-->
-<!--<g:DockLayoutPanel unit='EM'> -->
-<!--<g:center> -->
-<!--<g:VerticalPanel ui:field="myMainPanel"/> -->
-<!--</g:center> -->
-<!--<g:west size="20"> -->
-<!--<g:FlowPanel> -->
-<!--</g:FlowPanel> -->
-<!--</g:west> -->
-<!--</g:DockLayoutPanel> -->
-<!--</g:AbsolutePanel>-->
