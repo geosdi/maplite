@@ -37,6 +37,21 @@ h1 {
     color: red;
 }
 
+.textDisabled {
+    color: grey;
+    font-style: italic;
+}
+
+.textEnabled {
+    color: black;
+    font-style: normal;
+}
+
+.layerRow {
+    border-collapse: separate; 
+    border-spacing: 5px;
+}
+
 /** Set ids using widget.getElement().setId("idOfElement") */
 #closeButton {
     margin: 15px 6px 6px;

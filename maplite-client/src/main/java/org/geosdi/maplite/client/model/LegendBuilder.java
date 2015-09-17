@@ -51,7 +51,7 @@ public class LegendBuilder {
 
     public static VerticalPanel generateLegendImage(final ClientRasterInfo raster,
             final Map map, final boolean visible) {
-        final VerticalPanel legendImagePanel = new VerticalPanel();
+        VerticalPanel legendImagePanel = new VerticalPanel();
         StringBuilder imageURL = new StringBuilder();
         imageURL.append(raster.getDataSource()).append(GET_LEGEND_REQUEST)
                 .append(raster.getLayerName()).append("&scale=").append(map.getScale())
@@ -59,31 +59,14 @@ public class LegendBuilder {
                 .append(raster.getStyles().size() > 0 ? raster.getStyles().get(0).getStyleString() : "")
                 .append("&LEGEND_OPTIONS=forceRule:True;forceLabels=on");
 
-        final Image legendImage = new Image(imageURL.toString());
-        legendImage.addLoadHandler(new LoadHandler() {
-
-            @Override
-            public void onLoad(LoadEvent event) {
-                logger.info("addLoadHandler: " + event);
-                legendImagePanel.setVisible(visible);
-            }
-        });
-        legendImage.addErrorHandler(new ErrorHandler() {
-
-            @Override
-            public void onError(ErrorEvent event) {
-                logger.info("onError: " + event);
-                logger.info("onError: " + event.toDebugString());
-                legendImagePanel.setVisible(false);
-            }
-        });
         String layerName;
         if (GPSharedUtils.isNotEmpty(raster.getAlias())) {
             layerName = raster.getAlias();
         } else {
             layerName = raster.getTitle();
         }
-        Button cqlButton = new Button("cql");
+        final Label layerNameLabel = new Label(layerName);
+        final Button cqlButton = new Button("cql");
         cqlButton.addClickHandler(new ClickHandler() {
 
             @Override
@@ -91,7 +74,7 @@ public class LegendBuilder {
                 getCQLDialogBox(raster, map).show();
             }
         });
-        Button refreshButton = new Button("refresh");
+        final Button refreshButton = new Button("refresh");
         refreshButton.addClickHandler(new ClickHandler() {
 
             @Override
@@ -101,12 +84,38 @@ public class LegendBuilder {
             }
         });
         HorizontalPanel layerRow = new HorizontalPanel();
-        layerRow.add(new Label(layerName).asWidget());
+        layerRow.add(layerNameLabel.asWidget());
         layerRow.add(cqlButton);
         layerRow.add(refreshButton);
-        layerRow.setSpacing(15);
+        layerRow.setStyleName("layerRow");
+        
+        
+        final Image legendImage = new Image(imageURL.toString());
+        legendImage.addLoadHandler(new LoadHandler() {
 
-//        legendImagePanel.add(new Label(layerName).asWidget());
+            @Override
+            public void onLoad(LoadEvent event) {
+                logger.info("addLoadHandler: " + event);
+                layerNameLabel.setStyleName(visible ? "textEnabled" : "textDisabled");
+                refreshButton.setEnabled(visible);
+                cqlButton.setEnabled(visible);
+                legendImage.setVisible(visible);
+//                legendImagePanel.setVisible(visible);
+            }
+        });
+        legendImage.addErrorHandler(new ErrorHandler() {
+
+            @Override
+            public void onError(ErrorEvent event) {
+                logger.info("onError: " + event);
+                logger.info("onError: " + event.toDebugString());
+                layerNameLabel.setStyleName("textDisabled");
+                refreshButton.setEnabled(false);
+                cqlButton.setEnabled(false);
+                legendImage.setVisible(false);
+//                legendImagePanel.setVisible(false);
+            }
+        });
         legendImagePanel.add(layerRow);
         legendImagePanel.add(legendImage);
         legendImagePanel.setVisible(visible);
