@@ -33,6 +33,7 @@
  */
 package org.geosdi.maplite.client.model;
 
+import java.util.logging.Logger;
 import org.gwtopenmaps.openlayers.client.OpenLayers;
 import org.gwtopenmaps.openlayers.client.Size;
 import org.gwtopenmaps.openlayers.client.layer.Bing;
@@ -157,6 +158,8 @@ public enum BaseLayerEnum {
     BaseLayerEnum(IBaseLayerCreator baseLayerCreator) {
         this.baseLayerCreator = baseLayerCreator;
     }
+
+    private final static Logger logger = Logger.getLogger("");
 
     private final IBaseLayerCreator baseLayerCreator;
     private final static String bingKey = "Apd8EWF9Ls5tXmyHr22O"
@@ -345,6 +348,7 @@ public enum BaseLayerEnum {
         emptyLayerOptions.setIsBaseLayer(true); //make it a baselayer.
         emptyLayerOptions.setProjection(CoordinateReferenceSystem.WGS_84.getCode());
 //        emptyLayerOptions.setResolutions(baseMapResolutions);
+        emptyLayerOptions.setNumZoomLevels(23);
         EmptyLayer emptyLayer = new EmptyLayer("Empty layer", emptyLayerOptions);
         return emptyLayer;
     }

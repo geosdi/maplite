@@ -59,7 +59,7 @@ public class LegendBuilder {
                 .append(raster.getStyles().size() > 0 ? raster.getStyles().get(0).getStyleString() : "")
                 .append("&LEGEND_OPTIONS=forceRule:True;forceLabels=on");
 
-        String layerName;
+        final String layerName;
         if (GPSharedUtils.isNotEmpty(raster.getAlias())) {
             layerName = raster.getAlias();
         } else {
@@ -107,8 +107,7 @@ public class LegendBuilder {
 
             @Override
             public void onError(ErrorEvent event) {
-                logger.info("onError: " + event);
-                logger.info("onError: " + event.toDebugString());
+                logger.info("Unloadable image: " + layerName);
                 layerNameLabel.setStyleName("textDisabled");
                 refreshButton.setEnabled(false);
                 cqlButton.setEnabled(false);
