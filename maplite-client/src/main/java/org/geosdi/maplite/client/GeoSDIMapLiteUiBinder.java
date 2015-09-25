@@ -4,6 +4,8 @@ import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.google.gwt.core.client.GWT;
+import com.google.gwt.dom.client.Element;
+import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.http.client.URL;
@@ -20,6 +22,7 @@ import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.LayoutPanel;
 import com.google.gwt.user.client.ui.ListBox;
 import com.google.gwt.user.client.ui.PopupPanel;
+import com.google.gwt.user.client.ui.RootPanel;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
 import com.google.gwt.user.client.ui.Widget;
@@ -33,6 +36,7 @@ import org.geosdi.maplite.client.model.LegendBuilder;
 import org.geosdi.maplite.client.model.MapLiteUrlRewriter;
 import org.geosdi.maplite.client.resources.UiMapLiteStyle;
 import org.geosdi.maplite.client.service.MapLiteServiceRemote;
+import org.geosdi.maplite.client.websocket.WebSocketClientConnector;
 import org.geosdi.maplite.client.widget.MapLiteGeocodingTools;
 import org.geosdi.maplite.client.widget.MapLiteGetFeatureInfoTool;
 import org.geosdi.maplite.shared.ClientRasterInfo;
@@ -64,8 +68,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
     private final static Logger logger = Logger.getLogger("");
     private final static int NUM_ZOOM_LEVEL = 31;
-
-    private Map map;
+    public static Map map;
 
     interface MapLiteUiBinder extends UiBinder<Widget, GeoSDIMapLiteUiBinder> {
     }
@@ -108,9 +111,27 @@ public class GeoSDIMapLiteUiBinder extends Composite {
 
     public GeoSDIMapLiteUiBinder() {
         initWidget(ourUiBinder.createAndBindUi(this));
-
         mapLiteStyle.getStyle().ensureInjected();
-
+        String websocketUUID = Window.Location.getParameter("uuid");
+        if (GPSharedUtils.isNotEmpty(websocketUUID)) {
+            new WebSocketClientConnector(websocketUUID);
+        }
+        String geocodingVisibility = Window.Location.getParameter("geocodingVisibility");
+        if (GPSharedUtils.isNotEmpty(geocodingVisibility)) {
+            boolean visible = Boolean.parseBoolean(geocodingVisibility);
+            geocodingTextBox.setVisible(visible);
+        }
+        String sharePanelVisibility = Window.Location.getParameter("sharePanelVisibility");
+        if (GPSharedUtils.isNotEmpty(sharePanelVisibility) && !Boolean.parseBoolean(sharePanelVisibility)) {
+            NodeList<Element> divs = RootPanel.getBodyElement().getElementsByTagName("div");
+            for (int i = 0; divs != null && i < divs.getLength(); i++) {
+                Element el = divs.getItem(i);
+                if (GPSharedUtils.isNotEmpty(el.getClassName()) && el.getClassName().equalsIgnoreCase("share42init")) {
+                    el.removeFromParent();
+                    break;
+                }
+            }
+        }
         layoutPanel.setSize("99.8%", "99.8%");
         mapInfoPanel.getElement().setId("mapInfoPanel");
         mapInfoPanel.setVisible(false);
@@ -228,6 +249,10 @@ public class GeoSDIMapLiteUiBinder extends Composite {
             for (GPFolderClientInfo folder : GPSharedUtils.safeList(clientProject.getRootFolders())) {
                 this.addFolderElementsToTheMap(Lists.<IGPFolderElements>newArrayList(folder));
             }
+        }
+        String legendPanelVisibility = Window.Location.getParameter("legendPanelVisibility");
+        if (GPSharedUtils.isNotEmpty(legendPanelVisibility) && Boolean.parseBoolean(legendPanelVisibility)) {
+            this.handleClick(null);
         }
     }
 

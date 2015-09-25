@@ -69,5 +69,7 @@ public interface MapLiteServiceRemote extends RemoteService {
     List<MapLiteGeocodingResult> executeGeocoding(String address) throws MapLiteException;
     
     List<MapLiteGeocodingResult> suggestGeocoding(String suggestText) throws MapLiteException;
+    
+    String getWebsocketWSAddress() throws MapLiteException;
 
 }

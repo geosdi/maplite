@@ -63,6 +63,12 @@
         </dependency>
         
         <dependency>
+            <groupId>com.sksamuel.gwt</groupId>
+            <artifactId>gwt-websockets</artifactId>
+            <version>1.0.4</version>
+        </dependency>
+        
+        <dependency>
             <groupId>org.geosdi</groupId>
             <artifactId>geocoder-api</artifactId>
             <version>${geocoder-version}</version>

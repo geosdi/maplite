@@ -5,6 +5,8 @@
  */
 package org.geosdi.maplite.client.model;
 
+import com.google.common.collect.ArrayListMultimap;
+import com.google.common.collect.ListMultimap;
 import com.google.common.collect.Maps;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
@@ -26,6 +28,7 @@ import com.google.gwt.user.client.ui.Label;
 import com.google.gwt.user.client.ui.TextArea;
 import com.google.gwt.user.client.ui.TextBox;
 import com.google.gwt.user.client.ui.VerticalPanel;
+import java.util.List;
 import java.util.logging.Logger;
 import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
 import org.geosdi.maplite.shared.ClientRasterInfo;
@@ -45,6 +48,9 @@ public class LegendBuilder {
     private static final String GET_LEGEND_REQUEST = "?REQUEST=GetLegendGraphic"
             + "&VERSION=1.0.0&FORMAT=image/png&LAYER=";
     private final static Logger logger = Logger.getLogger("");
+
+    private static final ListMultimap<String, IGeoPlatformExecutor> layerLegendEnablers = ArrayListMultimap.<String, IGeoPlatformExecutor>create();
+    private static final ListMultimap<String, IGeoPlatformExecutor> layerLegendDisablers = ArrayListMultimap.<String, IGeoPlatformExecutor>create();
 
     private LegendBuilder() {
     }
@@ -88,33 +94,52 @@ public class LegendBuilder {
         layerRow.add(cqlButton);
         layerRow.add(refreshButton);
         layerRow.setStyleName("layerRow");
-        
-        
+
         final Image legendImage = new Image(imageURL.toString());
-        legendImage.addLoadHandler(new LoadHandler() {
+
+        final IGeoPlatformExecutor legendEnabler = new IGeoPlatformExecutor() {
 
             @Override
-            public void onLoad(LoadEvent event) {
-                logger.info("addLoadHandler: " + event);
+            public Object execute() {
                 layerNameLabel.setStyleName(visible ? "textEnabled" : "textDisabled");
                 refreshButton.setEnabled(visible);
                 cqlButton.setEnabled(visible);
                 legendImage.setVisible(visible);
-//                legendImagePanel.setVisible(visible);
+                return null;
+            }
+        };
+        layerLegendEnablers.put(raster.getLayerName(), legendEnabler);
+
+        legendImage.addLoadHandler(new LoadHandler() {
+
+            @Override
+            public void onLoad(LoadEvent event) {
+                legendEnabler.execute();
             }
         });
+
+        final IGeoPlatformExecutor legendDisabler = new IGeoPlatformExecutor() {
+
+            @Override
+            public Object execute() {
+                layerNameLabel.setStyleName("textDisabled");
+                refreshButton.setEnabled(false);
+                cqlButton.setEnabled(false);
+                legendImage.setVisible(false);
+                return null;
+            }
+        };
+        layerLegendDisablers.put(raster.getLayerName(), legendDisabler);
+
         legendImage.addErrorHandler(new ErrorHandler() {
 
             @Override
             public void onError(ErrorEvent event) {
                 logger.info("Unloadable image: " + layerName);
-                layerNameLabel.setStyleName("textDisabled");
-                refreshButton.setEnabled(false);
-                cqlButton.setEnabled(false);
-                legendImage.setVisible(false);
-//                legendImagePanel.setVisible(false);
+                legendDisabler.execute();
             }
         });
+
         legendImagePanel.add(layerRow);
         legendImagePanel.add(legendImage);
         legendImagePanel.setVisible(visible);
@@ -294,6 +319,14 @@ public class LegendBuilder {
         cqlDialogBox.setAnimationEnabled(true);
         cqlDialogBox.center();
         return cqlDialogBox;
+    }
+
+    public static List<IGeoPlatformExecutor> getLayerLegendDisablers(String layerName) {
+        return layerLegendDisablers.get(layerName);
+    }
+
+    public static List<IGeoPlatformExecutor> getLayerLegendEnablers(String layerName) {
+        return layerLegendEnablers.get(layerName);
     }
 
 }

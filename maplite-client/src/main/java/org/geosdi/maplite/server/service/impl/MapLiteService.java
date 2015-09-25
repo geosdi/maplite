@@ -84,6 +84,7 @@ import org.geosdi.maplite.shared.geocoding.MapLiteLocationType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 
 /**
  * @author Nazzareno Sileno - CNR IMAA geoSDI Group
@@ -103,6 +104,9 @@ public class MapLiteService implements IMapLiteService {
     private GeocoderRestService geocoderRestClient;
 
     private GeoServerRESTReader sharedRestReader;
+
+    private @Value("websocketws{websocket_server_endpoint_address}")
+    String websocketWSAddress;
 
     /**
      * @param geoPlatformServiceClient the geoPlatformServiceClient to set
@@ -428,6 +432,11 @@ public class MapLiteService implements IMapLiteService {
             throw new MapLiteException("Unable to find the requested projct: " + rnf);
         }
         return this.convertToGPClientProject(projectDTO, accountProject.getBaseLayer());
+    }
+
+    @Override
+    public String getWebsocketWSAddress(HttpServletRequest request) throws MapLiteException {
+        return this.websocketWSAddress;
     }
 
 }

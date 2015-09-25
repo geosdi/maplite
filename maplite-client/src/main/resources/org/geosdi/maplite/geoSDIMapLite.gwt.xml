@@ -11,6 +11,9 @@
     <inherits name="com.google.common.collect.Collect"/>
     <inherits name='org.gwtopenmaps.openlayers.OpenLayers'/>
     <inherits name='org.geosdi.geoplatform.gui.SharingClientServerModule'/>
+    <!-- Websocket -->
+    <inherits name="com.sksamuel.gwt.GwtWebsockets" />
+    
     <inherits name='org.geosdi.maplite.MapLiteModel'/>
     
     <entry-point class='org.geosdi.maplite.client.GeoSDIMapLite'/>

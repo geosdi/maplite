@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <title>MapLite - WebSockets</title>
+
+        <style>
+            * { font-family:tahoma; font-size:12px; padding:0px; margin:0px; }
+            p { line-height:18px; margin-left: 10px;}
+            h1 { font-size: xx-large; text-align: center}
+            div { margin-left:auto; margin-right:auto;}
+            .CSS3{
+                border:1px solid #ccc;
+                border-bottom:2px solid #bbb;
+                border-top:1px solid #ddd;
+                border-radius:10px;
+                -webkit-border-radius:10px;
+                -moz-border-radius:10px;
+            }
+            .box h3{
+                text-align:center;
+                position:relative;
+                top:80px;
+            }
+            .box {
+                width:70%;
+                height:200px;
+                background:#FFF;
+                margin:40px auto;
+            }
+
+            /*==================================================
+             * Effect 7
+             * ===============================================*/
+            .effect7
+            {
+                position:relative;       
+                -webkit-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+                -moz-box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+                box-shadow:0 1px 4px rgba(0, 0, 0, 0.3), 0 0 40px rgba(0, 0, 0, 0.1) inset;
+            }
+            .effect7:before, .effect7:after
+            {
+                content:"";
+                position:absolute; 
+                z-index:-1;
+                -webkit-box-shadow:0 0 20px rgba(0,0,0,0.8);
+                -moz-box-shadow:0 0 20px rgba(0,0,0,0.8);
+                box-shadow:0 0 20px rgba(0,0,0,0.8);
+                top:0;
+                bottom:0;
+                left:10px;
+                right:10px;
+                -moz-border-radius:100px / 10px;
+                border-radius:100px / 10px;
+            } 
+            .effect7:after
+            {
+                right:10px; 
+                left:auto;
+                -webkit-transform:skew(8deg) rotate(3deg); 
+                -moz-transform:skew(8deg) rotate(3deg);     
+                -ms-transform:skew(8deg) rotate(3deg);     
+                -o-transform:skew(8deg) rotate(3deg); 
+                transform:skew(8deg) rotate(3deg);
+            }
+            #input { border-radius:2px; border:1px solid #ccc;
+                     margin-top:10px; padding:5px; width:400px;  }
+            #status { width:88px; display:block; float:left; margin-top:15px; }
+        </style>
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+        <script src="./mapLiteWebSocket.js"></script>
+    </head>
+    <body>
+        <h1>MapLite WebSocket Demonstrator</h1>
+        <hr/>
+        <div class="CSS3">
+            <p>
+                Layer Name: <input type="text" id="layerName" title="Layer Name" />
+                Value: <input type="text" id="value" title="Value"/>
+            </p>
+            <p><a href="javascript:enableLayer(document.getElementById('layerName').value, document.getElementById('value').value);">Enable Layer</a></p>
+            <p><a href="javascript:void(0);" onclick="sendCQLFilter(document.getElementById('layerName').value, document.getElementById('value').value)">Send CQL Filter</a></p>
+        </div>
+        <div id="mapLite" class="box effect7">
+        </div>
+
+    </body>
+</html>

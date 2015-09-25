@@ -25,5 +25,20 @@
         <property name="ignoreResourceNotFound" value="true" />
         <property name="ignoreUnresolvablePlaceholders" value="true"/>
     </bean>
+
+    <bean id="websocketPropertyConfigurer"
+              class="org.springframework.context.support.PropertySourcesPlaceholderConfigurer">
+        <property name="placeholderPrefix" value="websocketws{" />
+        <property name="placeholderSuffix" value="}" />
+        <property name="nullValue" value="@null" />
+        <property name="locations">
+            <list>
+                <value>classpath:websocket-ws.properties</value>
+                <value>file:${GP_DATA_DIR}/websocket-ws.properties</value>
+            </list>
+        </property>
+        <property name="ignoreResourceNotFound" value="true" />
+        <property name="ignoreUnresolvablePlaceholders" value="true"/>
+    </bean>
     
 </beans>

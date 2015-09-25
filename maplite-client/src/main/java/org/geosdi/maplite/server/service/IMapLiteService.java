@@ -54,4 +54,6 @@ public interface IMapLiteService {
             String language) throws MapLiteException;
 
     List<MapLiteGeocodingResult> suggestGeocoding(String suggestText) throws MapLiteException;
+
+    String getWebsocketWSAddress(HttpServletRequest request) throws MapLiteException;
 }

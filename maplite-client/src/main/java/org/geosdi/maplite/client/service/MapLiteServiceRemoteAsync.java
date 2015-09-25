@@ -55,4 +55,6 @@ public interface MapLiteServiceRemoteAsync {
 
     void suggestGeocoding(String suggestText, AsyncCallback<List<MapLiteGeocodingResult>> callBack)
             throws MapLiteException;
+
+    void getWebsocketWSAddress(AsyncCallback<String> callBack) throws MapLiteException;
 }

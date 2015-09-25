@@ -71,5 +71,10 @@ public class MapLiteRemoteImpl extends GPAutoInjectingRemoteServiceServlet
     public List<MapLiteGeocodingResult> suggestGeocoding(String suggestText) throws MapLiteException {
         return this.mapLiteService.suggestGeocoding(suggestText);
     }
+    
+    @Override
+    public String getWebsocketWSAddress() throws MapLiteException{
+        return this.mapLiteService.getWebsocketWSAddress(super.getThreadLocalRequest());
+    }
 
 }
