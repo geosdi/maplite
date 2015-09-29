@@ -3,6 +3,7 @@ $(function () {
     var webSocketServer = 'ws://127.0.0.1:1337';
     var mapLiteURl = 'http://127.0.0.1:8888/geoSDIMapLite.html';
     var mapID = '56-50';
+    var gpStackHost = 'http://150.145.133.106:8080';
     var legendPanelVisibility = true;
     var geocodingVisibility = false;
     var sharePanelVisibility = false;
@@ -33,8 +34,8 @@ $(function () {
     var uuid = UUID();
     console.log('Generated: ', uuid);
     //Generating mapLite iframe
-    var iframe = '<iframe src="' + mapLiteURl + '?mapID=' + mapID + 
-            '&x=7.519188691882006&y=43.328777606327&zoom=5&uuid=' + uuid + 
+    var iframe = '<iframe src="' + mapLiteURl + '?mapID=' + mapID +
+            '&x=7.519188691882006&y=43.328777606327&zoom=5&uuid=' + uuid +
             '&geocodingVisibility=' + geocodingVisibility +
             '&legendPanelVisibility=' + legendPanelVisibility +
             '&sharePanelVisibility=' + sharePanelVisibility +
@@ -88,7 +89,7 @@ $(function () {
 //            mapLite.html($('<p>', {text: 'Sorry, but there\'s some problem with your '
 //                        + 'connection or the server is down.'}));
         }
-    }, 3000);
+    }, 5000);
 
     window.sendCQLFilter = function (layerName, cqlFilter) {
         console.log('Send CQL Filter called');
@@ -114,4 +115,13 @@ $(function () {
         ));
     }
 
+    var projectID = mapID.split('-')[0];
+    $.getJSON(gpStackHost + "/geoplatform-service/jsonCore/layers/getFirstLevelLayers/" + projectID, function (result) {
+//        console.log(result.ShortLayerDTOContainer);
+        if (result.ShortLayerDTOContainer.layer) {
+            $.each(result.ShortLayerDTOContainer.layer, function (i, layer) {
+                $("#layerName").append('<option value="' + layer.name + '">' + layer.name + '</option>');
+            });
+        }
+    });
 });
