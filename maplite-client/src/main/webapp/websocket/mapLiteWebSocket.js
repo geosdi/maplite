@@ -4,6 +4,10 @@ $(function () {
     var mapLiteURl = 'http://127.0.0.1:8888/geoSDIMapLite.html';
     var mapID = '56-50';
     var gpStackHost = 'http://150.145.133.106:8080';
+    var baseMap = 'BING_AERIAL';
+    //var x = 7.519188691882006;
+    //var y = 43.328777606327;
+    //var zoom = 5;
     var legendPanelVisibility = true;
     var geocodingVisibility = false;
     var sharePanelVisibility = false;
@@ -25,21 +29,33 @@ $(function () {
 
     // if browser doesn't support WebSocket, just show some notification and exit
     if (!window.WebSocket) {
-        mapLite.html($('<p>', {text: 'Sorry, but your browser doesn\'t '
-                    + 'support WebSockets.'}));
+        mapLite.html($('<p>', {
+            text: 'Sorry, but your browser doesn\'t '
+            + 'support WebSockets.'
+        }));
         $('span').hide();
         return;
     }
 
     var uuid = UUID();
     console.log('Generated: ', uuid);
+    var generatedURL = mapLiteURl + '?mapID=' + mapID + '&uuid=' + uuid +
+        '&geocodingVisibility=' + geocodingVisibility +
+        '&legendPanelVisibility=' + legendPanelVisibility +
+        '&sharePanelVisibility=' + sharePanelVisibility;
+    generatedURL += baseMap !== null ? '&baseMap=' + baseMap : '';
+    if (typeof x != 'undefined' && x) {
+        generatedURL += '&x=' + x;
+    }
+    if (typeof y != 'undefined' && y) {
+        generatedURL += y !== null ? '&y=' + y : '';
+    }
+    if (typeof zoom != 'undefined' && zoom) {
+        generatedURL += zoom !== null ? '&zoom=' + zoom : '';
+    }
     //Generating mapLite iframe
-    var iframe = '<iframe src="' + mapLiteURl + '?mapID=' + mapID +
-            '&x=7.519188691882006&y=43.328777606327&zoom=5&uuid=' + uuid +
-            '&geocodingVisibility=' + geocodingVisibility +
-            '&legendPanelVisibility=' + legendPanelVisibility +
-            '&sharePanelVisibility=' + sharePanelVisibility +
-            '" width="100%" height="600px"></iframe>';
+    var iframe = '<iframe src="' + generatedURL +
+            '" width="100%" height="100%"></iframe>';
     console.log(iframe);
     $('#mapLite').append(iframe);
 
@@ -72,7 +88,6 @@ $(function () {
             var json = JSON.parse(message.data);
         } catch (e) {
             console.log('This doesn\'t look like a valid JSON: ', message.data);
-            return;
         }
     };
 
@@ -101,7 +116,7 @@ $(function () {
                     mapLiteInstance: uuid      //mapLiteInstance
                 }
         ));
-    }
+    };
 
     window.enableLayer = function (layerName, enabled) {
         console.log('enableLayer called');
@@ -113,7 +128,7 @@ $(function () {
                     mapLiteInstance: uuid      //mapLiteInstance
                 }
         ));
-    }
+    };
 
     var projectID = mapID.split('-')[0];
     $.getJSON(gpStackHost + "/geoplatform-service/jsonCore/layers/getFirstLevelLayers/" + projectID, function (result) {
