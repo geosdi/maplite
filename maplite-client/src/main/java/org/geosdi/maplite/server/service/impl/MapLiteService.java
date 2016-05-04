@@ -43,6 +43,8 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
+
+import org.geosdi.geoplatform.response.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import javax.servlet.http.HttpServletRequest;
@@ -57,11 +59,6 @@ import org.geosdi.geoplatform.core.model.GPBBox;
 import org.geosdi.geoplatform.exception.ResourceNotFoundFault;
 import org.geosdi.geoplatform.gui.shared.GPLayerType;
 import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
-import org.geosdi.geoplatform.response.FolderDTO;
-import org.geosdi.geoplatform.response.IElementDTO;
-import org.geosdi.geoplatform.response.ProjectDTO;
-import org.geosdi.geoplatform.response.RasterLayerDTO;
-import org.geosdi.geoplatform.response.ShortLayerDTO;
 import org.geosdi.geoplatform.services.GeoPlatformService;
 import org.geosdi.geoplatform.services.GeocoderRestService;
 import org.geosdi.maplite.server.service.IMapLiteService;
@@ -307,9 +304,9 @@ public class MapLiteService implements IMapLiteService {
     }
 
     private List<IGPFolderElements> convertFolderElements(
-            List<IElementDTO> folderElements) {
+            List<AbstractElementDTO> folderElements) {
         List<IGPFolderElements> clientFolderElements = Lists.<IGPFolderElements>newArrayList();
-        Iterator<IElementDTO> iterator = folderElements.iterator();
+        Iterator<AbstractElementDTO> iterator = folderElements.iterator();
         while (iterator.hasNext()) {
             clientFolderElements.add(this.convertElement(iterator.next()));
         }
