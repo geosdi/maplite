@@ -1,3 +1,7 @@
+/maplite-model/maplite-model.iml
+/maplite.iml
+/maplite-client/maplite-client.iml
+/.idea
 /target/
 .settings/
 /maplite-model/target/
