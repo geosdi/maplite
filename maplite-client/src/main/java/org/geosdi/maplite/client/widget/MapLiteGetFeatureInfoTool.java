@@ -12,6 +12,7 @@ import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
 import com.google.gwt.event.logical.shared.CloseHandler;
 import com.google.gwt.user.client.Command;
+import com.google.gwt.user.client.Window;
 import com.google.gwt.user.client.ui.Button;
 import com.google.gwt.user.client.ui.HTMLPanel;
 import com.google.gwt.user.client.ui.PopupPanel;
@@ -52,9 +53,10 @@ public class MapLiteGetFeatureInfoTool {
 
     private void initGetGeatureInfoTool() {
         this.getFeatureInfoVerticalPanel = new VerticalPanel();
-        getFeatureInfoPanel.setAutoHideEnabled(true);
+        getFeatureInfoPanel.setAutoHideEnabled(false);
+        getFeatureInfoPanel.setAnimationEnabled(false);
         getFeatureInfoPanel.setModal(false);
-        getFeatureInfoPanel.setSize("450px", "350px");
+        getFeatureInfoPanel.setSize("80%", "350px");
         getFeatureInfoPanel.setVisible(false);
         getFeatureInfoPanel.setTitle("Get Feature Info");
         getFeatureInfoPanel.addCloseHandler(new CloseHandler<PopupPanel>() {
@@ -66,7 +68,8 @@ public class MapLiteGetFeatureInfoTool {
             }
         });
         this.getFeatureInfoScrollPanel = new ScrollPanel();
-        this.getFeatureInfoScrollPanel.setSize("400px", "250px");
+        this.getFeatureInfoScrollPanel.setAlwaysShowScrollBars(true);
+        this.getFeatureInfoScrollPanel.setSize("100%", "300px");
         this.getFeatureInfoScrollPanel.addStyleName("getFeatureInfoBackgroud");
         Button btnClose = new Button("Close");
         btnClose.addClickHandler(new ClickHandler() {
@@ -97,10 +100,17 @@ public class MapLiteGetFeatureInfoTool {
                             if (textContainsNotEmptyHTMLBody(eventObject.getText())) {
                                 logger.info("*** GetFeatureInfo has a not empty body");
                                 try {
+                                    getFeatureInfoVerticalPanel.clear();
+                                    getFeatureInfoVerticalPanel.setSize("100%","300px");
                                     getFeatureInfoVerticalPanel.add(new HTMLPanel(eventObject.getText()));
                                     if (!getFeatureInfoPanel.isVisible()) {
+                                        getFeatureInfoPanel.show();
+                                        //getFeatureInfoPanel.center();
+                                        int top = Window.getClientHeight() - getFeatureInfoPanel.getOffsetHeight();
+                                        com.google.gwt.user.client.Element elem = getFeatureInfoPanel.getElement();
+                                        elem.getStyle().setPropertyPx("left", 347);
+                                        elem.getStyle().setPropertyPx("top", 41);
                                         getFeatureInfoPanel.setVisible(true);
-                                        getFeatureInfoPanel.center();
                                     }
                                 } catch (Exception e) {
                                     logger.warning("**** ERROR on adding getFeatureInfo to the showing panel: " + e.toString());

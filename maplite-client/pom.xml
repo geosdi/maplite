@@ -93,6 +93,13 @@
         </dependency>
 
         <dependency>
+            <groupId>com.sun.xml.fastinfoset</groupId>
+            <artifactId>FastInfoset</artifactId>
+            <version>1.2.8</version>
+        </dependency>
+
+
+        <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
         </dependency>
@@ -188,7 +195,7 @@
                 <executions>
                     <execution>
                         <goals>
-                            <!--<goal>compile</goal>-->
+                            <goal>compile</goal>
                             <goal>test</goal>
                             <!--<goal>i18n</goal>-->
                             <goal>generateAsync</goal>
