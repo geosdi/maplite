@@ -35,6 +35,8 @@ package org.geosdi.maplite.client.model;
 
 import com.google.common.collect.Lists;
 import java.util.List;
+
+import com.google.gwt.user.client.Window;
 import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
 import org.gwtopenmaps.openlayers.client.control.GetFeatureInfoVendorParam;
 import org.gwtopenmaps.openlayers.client.control.WMSGetFeatureInfo;
@@ -58,6 +60,8 @@ public class FeatureInfoControlFactory {
      * @return
      */
     public static WMSGetFeatureInfo createControl(Layer layer) {
+
+        final String attore = Window.Location.getParameter("attore");
         WMSGetFeatureInfoOptions options = new WMSGetFeatureInfoOptions();
         GetFeatureInfoVendorParam param = new GetFeatureInfoVendorParam();
         WMS wms = WMS.narrowToLayer(layer.getJSObject());
@@ -70,15 +74,18 @@ public class FeatureInfoControlFactory {
             if (GPSharedUtils.isNotEmpty(propertyNameList) && !propertyName.equalsIgnoreCase("REQUEST")
                     && GPSharedUtils.isNotEmpty(propertyValue) && !propertyValue.equalsIgnoreCase("null")) {
                 param.setParameter(propertyName, propertyValue);
+
 //                System.out.println("Setted parameter: " + propertyName + " - "
 //                        + propertyValue);
             }
             i++;
         }
+        param.setParameter("attore", attore);
         options.setVendorParams(param);
         options.setLayers(new WMS[]{wms});
         options.setTitle("Query visible layers");
         options.setQueryVisible(true);
+
         return new WMSGetFeatureInfo(options);
     }
 

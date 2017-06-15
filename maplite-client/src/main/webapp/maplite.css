@@ -11,6 +11,17 @@
     z-index: 1000;
 }
 
+.iterLogo {
+    background: url(img/iter_logo_transp.png) no-repeat;
+    -background: url(img/iter_logo_transp.png) no-repeat;
+    bottom: 22px;
+    left: 174px;
+    position: absolute;
+    width:100px;
+    height:66px;
+    z-index: 1000;
+}
+
 h1 {
     font-size: 2em;
     font-weight: bold;

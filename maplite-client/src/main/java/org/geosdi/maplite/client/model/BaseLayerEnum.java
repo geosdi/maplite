@@ -162,8 +162,7 @@ public enum BaseLayerEnum {
     private final static Logger logger = Logger.getLogger("");
 
     private final IBaseLayerCreator baseLayerCreator;
-    private final static String bingKey = "Apd8EWF9Ls5tXmyHr22O"
-            + "uL1ay4HRJtI4JG4jgluTDVaJdUXZV6lpSBpX-TwnoRDG";
+    private final static String bingKey = "ApTJzdkyN1DdFKkRAE6QIDtzihNaf6IWJsT-nQ_2eMoO4PN__0Tzhl2-WgJtXFSp";
     public final static double[] baseMapResolutions = {156543.03390625d, 78271.516953125d,
         39135.7584765625d, 19567.87923828125d, 9783.939619140625d,
         4891.9698095703125d, 2445.9849047851562d, 1222.9924523925781d,
@@ -218,7 +217,7 @@ public enum BaseLayerEnum {
         defaultMapOptions.setTileSize(new Size(256, 256));
         defaultMapOptions.setResolutions(baseMapResolutions);
         Layer mapQuestOSMBaseLayer = OSM.THIS("MapQuest OSM", OpenLayers.getProxyHost()
-                + "http://otile1.mqcdn.com/tiles/1.0.0/osm/${z}/${x}/${y}.png",
+                        + "https://a.tiles.mapbox.com/v4/mapquest.streets-mb/${z}/${x}/${y}.png?access_token=pk.eyJ1IjoibWFwcXVlc3QiLCJhIjoiY2Q2N2RlMmNhY2NiZTRkMzlmZjJmZDk0NWU0ZGJlNTMifQ.mPRiEubbajc6a5y9ISgydg",
                 defaultMapOptions);
         mapQuestOSMBaseLayer.setIsBaseLayer(Boolean.TRUE);
         return mapQuestOSMBaseLayer;

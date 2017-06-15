@@ -19,7 +19,7 @@
 .geocodingBoxCss {
     position: absolute;
     right: 15px !important;
-    z-index: 21;
+    z-index: 80;
     height: 130px;
     width: 100%;
 }

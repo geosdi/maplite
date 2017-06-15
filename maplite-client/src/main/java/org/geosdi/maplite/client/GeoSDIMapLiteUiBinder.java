@@ -3,11 +3,15 @@ package org.geosdi.maplite.client;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
+import com.google.gwt.core.client.Callback;
 import com.google.gwt.core.client.GWT;
 import com.google.gwt.dom.client.Element;
 import com.google.gwt.dom.client.NodeList;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
+import com.google.gwt.geolocation.client.Geolocation;
+import com.google.gwt.geolocation.client.Position;
+import com.google.gwt.geolocation.client.PositionError;
 import com.google.gwt.http.client.URL;
 import com.google.gwt.uibinder.client.UiBinder;
 import com.google.gwt.uibinder.client.UiField;
@@ -43,22 +47,14 @@ import org.geosdi.maplite.shared.ClientRasterInfo;
 import org.geosdi.maplite.shared.GPClientProject;
 import org.geosdi.maplite.shared.GPFolderClientInfo;
 import org.geosdi.maplite.shared.IGPFolderElements;
-import org.gwtopenmaps.openlayers.client.LonLat;
-import org.gwtopenmaps.openlayers.client.Map;
-import org.gwtopenmaps.openlayers.client.MapOptions;
-import org.gwtopenmaps.openlayers.client.MapWidget;
-import org.gwtopenmaps.openlayers.client.OpenLayers;
-import org.gwtopenmaps.openlayers.client.Projection;
-import org.gwtopenmaps.openlayers.client.Size;
+import org.gwtopenmaps.openlayers.client.*;
 import org.gwtopenmaps.openlayers.client.control.MousePosition;
 import org.gwtopenmaps.openlayers.client.control.ScaleLine;
 import org.gwtopenmaps.openlayers.client.event.MapMoveEndListener;
 import org.gwtopenmaps.openlayers.client.event.MapZoomListener;
-import org.gwtopenmaps.openlayers.client.layer.Layer;
-import org.gwtopenmaps.openlayers.client.layer.TransitionEffect;
-import org.gwtopenmaps.openlayers.client.layer.WMS;
-import org.gwtopenmaps.openlayers.client.layer.WMSOptions;
-import org.gwtopenmaps.openlayers.client.layer.WMSParams;
+import org.gwtopenmaps.openlayers.client.feature.VectorFeature;
+import org.gwtopenmaps.openlayers.client.geometry.Point;
+import org.gwtopenmaps.openlayers.client.layer.*;
 
 /**
  * @author Nazzareno Sileno - CNR IMAA geoSDI Group
@@ -176,6 +172,60 @@ public class GeoSDIMapLiteUiBinder extends Composite {
             }
         });
 
+
+        final Vector myPosition = new Vector("my-pos");
+
+        //Check gps
+        Geolocation geoLocation = Geolocation.getIfSupported();
+
+
+        if (geoLocation == null) {
+            Window.alert(
+                    "No GeoLocation supprt available in this browser :-(");
+        } else {
+            final Geolocation.PositionOptions geoOptions = new Geolocation.PositionOptions();
+            geoOptions.setHighAccuracyEnabled(true);
+
+            geoLocation.watchPosition(new Callback<Position, PositionError>() {
+                public void onFailure(final PositionError reason) {
+                    Window.alert(
+                            "Something went wrong fetching the geolocation:\n" + reason);
+                }
+
+                public void onSuccess(final Position result) {
+                    // put the received result in an openlayers LonLat
+                    // object
+                    final LonLat lonLat = new LonLat(
+                            result.getCoordinates().getLongitude(),
+                            result.getCoordinates().getLatitude());
+                    lonLat.transform(CoordinateReferenceSystem.WGS_84.getCode(), map.getProjection());
+                    // transform lonlat to OSM coordinate system
+                    // Center the map on the received location
+                    map.setCenter(lonLat);
+
+                    // lets create a vector point on the location
+                    Style pointStyle = new Style();
+                    pointStyle.setFillColor("red");
+                    pointStyle.setStrokeColor("green");
+                    pointStyle.setStrokeWidth(2);
+                    pointStyle.setFillOpacity(0.9);
+
+                    final Point point = new Point(
+                            result.getCoordinates().getLongitude(),
+                            result.getCoordinates().getLatitude());
+                    point.transform(new Projection(CoordinateReferenceSystem.WGS_84.getCode()),
+                            new Projection(map.getProjection())); // transform point to OSM coordinate system
+                    final VectorFeature pointFeature = new VectorFeature(
+                            point, pointStyle);
+                    myPosition.destroyFeatures();
+                    myPosition.addFeature(pointFeature);
+                }
+            }, geoOptions);
+        }
+
+
+
+
         // Lets add some default controls to the map
         map.addControl(new ScaleLine()); // Display the scaleline
         map.addControl(new MousePosition());
@@ -232,6 +282,7 @@ public class GeoSDIMapLiteUiBinder extends Composite {
                                 addResourcesToTheMap(result);
                             }
                         });
+
             }
         }
 

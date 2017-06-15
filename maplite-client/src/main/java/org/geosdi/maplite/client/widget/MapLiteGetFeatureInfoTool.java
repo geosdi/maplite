@@ -7,6 +7,7 @@ package org.geosdi.maplite.client.widget;
 
 import com.google.common.collect.Lists;
 import com.google.gwt.core.client.Scheduler;
+import com.google.gwt.dom.client.Element;
 import com.google.gwt.event.dom.client.ClickEvent;
 import com.google.gwt.event.dom.client.ClickHandler;
 import com.google.gwt.event.logical.shared.CloseEvent;
@@ -56,7 +57,7 @@ public class MapLiteGetFeatureInfoTool {
         getFeatureInfoPanel.setAutoHideEnabled(false);
         getFeatureInfoPanel.setAnimationEnabled(false);
         getFeatureInfoPanel.setModal(false);
-        getFeatureInfoPanel.setSize("80%", "350px");
+        getFeatureInfoPanel.setSize("100%", "350px");
         getFeatureInfoPanel.setVisible(false);
         getFeatureInfoPanel.setTitle("Get Feature Info");
         getFeatureInfoPanel.addCloseHandler(new CloseHandler<PopupPanel>() {
@@ -85,12 +86,14 @@ public class MapLiteGetFeatureInfoTool {
         this.getFeatureInfoPanel.add(vp);
     }
 
-    public void addGetFeatureInfoToWMS(WMS wmsLayer) {
+    public void addGetFeatureInfoToWMS(final WMS wmsLayer) {
         WMSGetFeatureInfo wmsGetFeatureInfo = FeatureInfoControlFactory.createControl(wmsLayer);
+
         wmsGetFeatureInfo.addGetFeatureListener(new GetFeatureInfoListener() {
 //
             @Override
             public void onGetFeatureInfo(final GetFeatureInfoListener.GetFeatureInfoEvent eventObject) {
+
                 try {
                     Scheduler.get().scheduleDeferred(new Command() {
                         @Override
@@ -100,16 +103,31 @@ public class MapLiteGetFeatureInfoTool {
                             if (textContainsNotEmptyHTMLBody(eventObject.getText())) {
                                 logger.info("*** GetFeatureInfo has a not empty body");
                                 try {
-                                    getFeatureInfoVerticalPanel.clear();
+                                    logger.info("*** Layers Visible::::::::::::::  "+ wmsLayer.isVisible());
+                                    //if(map.getLayers().length == 2)
+                                        //getFeatureInfoVerticalPanel.clear();
                                     getFeatureInfoVerticalPanel.setSize("100%","300px");
                                     getFeatureInfoVerticalPanel.add(new HTMLPanel(eventObject.getText()));
                                     if (!getFeatureInfoPanel.isVisible()) {
+
                                         getFeatureInfoPanel.show();
                                         //getFeatureInfoPanel.center();
                                         int top = Window.getClientHeight() - getFeatureInfoPanel.getOffsetHeight();
-                                        com.google.gwt.user.client.Element elem = getFeatureInfoPanel.getElement();
-                                        elem.getStyle().setPropertyPx("left", 347);
+                                        Element elem = getFeatureInfoPanel.getElement();
+                                        elem.getStyle().setPropertyPx("left", 47);
                                         elem.getStyle().setPropertyPx("top", 41);
+                                        elem.getStyle().setProperty("zIndex", "40");
+                                        elem.getStyle().setProperty("background", "rgb(219, 227, 236) none repeat scroll 0% 0%");
+                                        elem.getStyle().setProperty("boxShadow", "0px 4px 5px rgba(0, 0, 0, 0.3)");
+                                        elem.getStyle().setPropertyPx("padding", 5);
+                                        elem.getStyle().setPropertyPx("right", 0);
+                                        elem.getStyle().setPropertyPx("bottom", 0);
+                                        elem.getStyle().setPropertyPx("width", 600);
+                                        elem.getStyle().setPropertyPx("maxHeight",321 );
+                                        elem.getStyle().setPropertyPx("height", 321);
+                                        elem.getStyle().setProperty("overflow", "visible");
+                                        elem.getStyle().setProperty("border", "1px solid rgb(204, 204, 204)");
+
                                         getFeatureInfoPanel.setVisible(true);
                                     }
                                 } catch (Exception e) {
