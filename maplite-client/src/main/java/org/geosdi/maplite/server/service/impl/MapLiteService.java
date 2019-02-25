@@ -6,81 +6,59 @@
  *
  * Copyright (C) 2008-2013 geoSDI Group (CNR IMAA - Potenza - ITALY).
  *
- * This program is free software: you can redistribute it and/or modify it 
- * under the terms of the GNU General Public License as published by 
- * the Free Software Foundation, either version 3 of the License, or 
- * (at your option) any later version. This program is distributed in the 
- * hope that it will be useful, but WITHOUT ANY WARRANTY; without 
- * even the implied warranty of MERCHANTABILITY or FITNESS FOR 
- * A PARTICULAR PURPOSE. See the GNU General Public License 
- * for more details. You should have received a copy of the GNU General 
- * Public License along with this program. If not, see http://www.gnu.org/licenses/ 
+ * This program is free software: you can redistribute it and/or modify it
+ * under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version. This program is distributed in the
+ * hope that it will be useful, but WITHOUT ANY WARRANTY; without
+ * even the implied warranty of MERCHANTABILITY or FITNESS FOR
+ * A PARTICULAR PURPOSE. See the GNU General Public License
+ * for more details. You should have received a copy of the GNU General
+ * Public License along with this program. If not, see http://www.gnu.org/licenses/
  *
  * ====================================================================
  *
- * Linking this library statically or dynamically with other modules is 
- * making a combined work based on this library. Thus, the terms and 
- * conditions of the GNU General Public License cover the whole combination. 
- * 
- * As a special exception, the copyright holders of this library give you permission 
- * to link this library with independent modules to produce an executable, regardless 
- * of the license terms of these independent modules, and to copy and distribute 
- * the resulting executable under terms of your choice, provided that you also meet, 
- * for each linked independent module, the terms and conditions of the license of 
- * that module. An independent module is a module which is not derived from or 
- * based on this library. If you modify this library, you may extend this exception 
- * to your version of the library, but you are not obligated to do so. If you do not 
- * wish to do so, delete this exception statement from your version. 
+ * Linking this library statically or dynamically with other modules is
+ * making a combined work based on this library. Thus, the terms and
+ * conditions of the GNU General Public License cover the whole combination.
+ *
+ * As a special exception, the copyright holders of this library give you permission
+ * to link this library with independent modules to produce an executable, regardless
+ * of the license terms of these independent modules, and to copy and distribute
+ * the resulting executable under terms of your choice, provided that you also meet,
+ * for each linked independent module, the terms and conditions of the license of
+ * that module. An independent module is a module which is not derived from or
+ * based on this library. If you modify this library, you may extend this exception
+ * to your version of the library, but you are not obligated to do so. If you do not
+ * wish to do so, delete this exception statement from your version.
  *
  */
 package org.geosdi.maplite.server.service.impl;
 
 import com.google.common.collect.Lists;
 import it.geosolutions.geoserver.rest.GeoServerRESTReader;
-import java.net.MalformedURLException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.List;
-
-import org.geosdi.geoplatform.response.*;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import javax.servlet.http.HttpServletRequest;
-import org.geosdi.geocoder.model.GCAddressComponent;
-import org.geosdi.geocoder.model.GCAddressComponentType;
-import org.geosdi.geocoder.model.GCAddressType;
-import org.geosdi.geocoder.model.GCGeocodingGeometry;
-import org.geosdi.geocoder.model.GCGeocodingResult;
+import org.geosdi.geocoder.model.*;
 import org.geosdi.geocoder.model.elasticbean.ELGeocodingBean;
 import org.geosdi.geoplatform.core.model.GPAccountProject;
 import org.geosdi.geoplatform.core.model.GPBBox;
 import org.geosdi.geoplatform.exception.ResourceNotFoundFault;
 import org.geosdi.geoplatform.gui.shared.GPLayerType;
 import org.geosdi.geoplatform.gui.shared.util.GPSharedUtils;
+import org.geosdi.geoplatform.response.*;
 import org.geosdi.geoplatform.services.GeoPlatformService;
 import org.geosdi.geoplatform.services.GeocoderRestService;
 import org.geosdi.maplite.server.service.IMapLiteService;
-import org.geosdi.maplite.shared.BBoxClientInfo;
-import org.geosdi.maplite.shared.ClientRasterInfo;
-import org.geosdi.maplite.shared.GPClientProject;
-import org.geosdi.maplite.shared.GPFolderClientInfo;
-import org.geosdi.maplite.shared.GPLayerClientInfo;
-import org.geosdi.maplite.shared.GPStyleStringBeanModel;
-import org.geosdi.maplite.shared.IGPFolderElements;
-import org.geosdi.maplite.shared.MapLiteException;
-import org.geosdi.maplite.shared.geocoding.MapLiteAddressComponent;
-import org.geosdi.maplite.shared.geocoding.MapLiteAddressComponentType;
-import org.geosdi.maplite.shared.geocoding.MapLiteAddressType;
-import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingBounds;
-import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingGeometry;
-import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingLatLng;
-import org.geosdi.maplite.shared.geocoding.MapLiteGeocodingResult;
-import org.geosdi.maplite.shared.geocoding.MapLiteLocationType;
+import org.geosdi.maplite.shared.*;
+import org.geosdi.maplite.shared.geocoding.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
+
+import javax.servlet.http.HttpServletRequest;
+import java.net.MalformedURLException;
+import java.util.*;
 
 /**
  * @author Nazzareno Sileno - CNR IMAA geoSDI Group
@@ -240,7 +218,7 @@ public class MapLiteService implements IMapLiteService {
                 if (result.getGeometryLocation() != null) {
                     mapLiteGeocodingResult.geometry.location
                             = new MapLiteGeocodingLatLng(result.getGeometryLocation().getLat(),
-                                    result.getGeometryLocation().getLon());
+                            result.getGeometryLocation().getLon());
                 }
                 //selectedItem.geometry.bounds
                 if (result.getBoundsNortheast() != null && result.getBoundsSouthwest() != null) {
@@ -265,9 +243,7 @@ public class MapLiteService implements IMapLiteService {
         clientProject.setId(projectDTO.getId());
         clientProject.setName(projectDTO.getName());
         clientProject.setNumberOfElements(projectDTO.getNumberOfElements());
-        if (projectDTO.isShared() != null) {
-            clientProject.setShared(projectDTO.isShared());
-        }
+        clientProject.setShared(projectDTO.isShared());
         clientProject.setRootFolders(this.convertOnlyFolders(
                 projectDTO.getRootFolders()));
         clientProject.setBaseLayer(baseLayer);
@@ -278,7 +254,7 @@ public class MapLiteService implements IMapLiteService {
             Collection<FolderDTO> folders) {
         ArrayList<GPFolderClientInfo> foldersClient = Lists.<GPFolderClientInfo>newArrayList();
         if (folders != null) {
-            for (Iterator<FolderDTO> it = folders.iterator(); it.hasNext();) {
+            for (Iterator<FolderDTO> it = folders.iterator(); it.hasNext(); ) {
                 GPFolderClientInfo folder = this.convertFolderElement(it.next());
                 foldersClient.add(folder);
             }
@@ -378,7 +354,7 @@ public class MapLiteService implements IMapLiteService {
                     String layerAlias;
                     if (layerDTO.getAlias() != null
                             && layerDTO.getAlias().indexOf(
-                                    LayerTimeFilterWidget_LAYER_TIME_DELIMITER) != -1) {
+                            LayerTimeFilterWidget_LAYER_TIME_DELIMITER) != -1) {
                         layerAlias = layerDTO.getAlias().substring(0,
                                 layerDTO.getAlias().indexOf(
                                         LayerTimeFilterWidget_LAYER_TIME_DELIMITER));
@@ -387,13 +363,13 @@ public class MapLiteService implements IMapLiteService {
                     }
                     layer.setAlias(
                             layerAlias + LayerTimeFilterWidget_LAYER_TIME_DELIMITER
-                            + layer.getVariableTimeFilter() + "]");
+                                    + layer.getVariableTimeFilter() + "]");
                 }
             } catch (NumberFormatException nfe) {
             } catch (MalformedURLException nfe) {
                 logger.error(
                         "Impossible to retrieve time filter executing call with "
-                        + "geoServerManager: " + nfe);
+                                + "geoServerManager: " + nfe);
             }
         }
         layer.setzIndex(layerDTO.getPosition());
